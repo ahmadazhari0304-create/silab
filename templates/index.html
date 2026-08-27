@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -1555,7 +1555,7 @@ window.onerror = function(message, source, lineno, colno, error) {
     <script>
         window.APP_CONFIG = {
             username: "{{ username }}",
-            isAdmin: "{{ 'true' if is_admin else 'false' }}" === "true"
+            isAdmin: "{{ is_admin|yesno:'true,false' }}" === "true"
         };
         window.currentUserIsAdmin = window.APP_CONFIG.isAdmin;
     </script>
