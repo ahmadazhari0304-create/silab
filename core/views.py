@@ -499,9 +499,24 @@ def handle_user_detail(request, user_id):
         return JsonResponse({"status": "success", "message": "Pengguna berhasil dihapus!"})
 
 @login_required
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def delete_booking(request, id):
+    try:
+        booking = Bookings.objects.get(id=id)
+        # Boleh hapus jika admin ATAU jika dia yang membuat booking & status masih pending
+        if request.session.get('is_admin') or (booking.user_id == request.session.get('user_id') and booking.status == 'pending'):
+            booking.delete()
+            return JsonResponse({"status": "success", "message": "Peminjaman berhasil dihapus!"})
+        else:
+            return JsonResponse({"status": "error", "message": "Akses ditolak atau status sudah tidak pending!"}, status=403)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+@login_required
 @admin_required
 @csrf_exempt
-@require_http_methods(["PUT"])
+@require_http_methods(["POST", "PUT"])
 def update_booking_status(request, id):
     data = json.loads(request.body)
     status = data.get('status')
