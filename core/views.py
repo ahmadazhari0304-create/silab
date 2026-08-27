@@ -1,4 +1,4 @@
-import os
+﻿import os
 import time
 from functools import wraps
 from django.shortcuts import render, redirect
@@ -37,7 +37,7 @@ def admin_required(view_func):
 # --- PAGE ROUTES ---
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
@@ -70,32 +70,32 @@ def login_view(request):
 def user_management(request):
     if not request.session.get('is_admin'):
         return redirect('dashboard')
-    return render(request, 'user_management.html', {'is_admin': True, 'username': request.session.get('username')})
+    return render(request, 'index.html', {'is_admin': True, 'username': request.session.get('username')})
 
 @login_required
 def schedule(request):
-    return render(request, 'schedule.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
 
 @login_required
 def request_history(request):
-    return render(request, 'request_history.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
 
 @login_required
 def sop_management(request):
-    return render(request, 'sop_management.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
 
 @login_required
 def sops_view(request):
-    return render(request, 'sops.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
@@ -104,17 +104,17 @@ def sops_view(request):
 def admin_schedule(request):
     if not request.session.get('is_admin'):
         return redirect('dashboard')
-    return render(request, 'admin_schedule.html', {'is_admin': True, 'username': request.session.get('username')})
+    return render(request, 'index.html', {'is_admin': True, 'username': request.session.get('username')})
 
 @login_required
 def request_management(request):
     if not request.session.get('is_admin'):
         return redirect('dashboard')
-    return render(request, 'request_management.html', {'is_admin': True, 'username': request.session.get('username')})
+    return render(request, 'index.html', {'is_admin': True, 'username': request.session.get('username')})
 
 @login_required
 def pbb_page(request):
-    return render(request, 'pbb.html', {
+    return render(request, 'index.html', {
         'is_admin': request.session.get('is_admin'),
         'username': request.session.get('username')
     })
@@ -123,7 +123,7 @@ def pbb_page(request):
 def admin_maintenance(request):
     if not request.session.get('is_admin'):
         return redirect('dashboard')
-    return render(request, 'admin_maintenance.html', {'is_admin': True, 'username': request.session.get('username')})
+    return render(request, 'index.html', {'is_admin': True, 'username': request.session.get('username')})
 
 
 # --- API ROUTES ---
@@ -472,3 +472,4 @@ def dashboard_summary(request):
         "pending": pending_count,
         "maintenance": maint_count
     })
+
