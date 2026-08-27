@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://silab-xi.vercel.app',
     'https://silab-giea3naf2-asdos.vercel.app',
+    'https://silab-umkt.vercel.app',
     'https://*.vercel.app'
 ]
 
