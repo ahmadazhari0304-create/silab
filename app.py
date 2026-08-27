@@ -14,7 +14,12 @@ from supabase import create_client, Client
 
 load_dotenv()
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
+)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['COMPRESS_ALGORITHM'] = ['gzip', 'deflate']
 app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')
