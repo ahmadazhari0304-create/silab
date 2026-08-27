@@ -1,4 +1,4 @@
-﻿# This is an auto-generated Django model module.
+# This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
@@ -14,7 +14,7 @@ class Bhp(models.Model):
     jumlah = models.IntegerField()
     tanggal = models.DateField()
     prodi = models.TextField()
-    user = models.ForeignKey('Users', models.DB_CASCADE, blank=True, null=True)
+    user = models.ForeignKey('Users', models.CASCADE, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -29,7 +29,7 @@ class Bookings(models.Model):
     kelas = models.TextField()
     prodi = models.TextField()
     tujuan = models.TextField()
-    user = models.ForeignKey('Users', models.DB_CASCADE, blank=True, null=True)
+    user = models.ForeignKey('Users', models.CASCADE, blank=True, null=True)
     status = models.TextField()
 
     class Meta:
@@ -60,7 +60,7 @@ class Maintenance(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     keterangan = models.TextField()
-    user = models.ForeignKey('Users', models.DB_CASCADE)
+    user = models.ForeignKey('Users', models.CASCADE)
 
     class Meta:
         managed = False
@@ -71,7 +71,7 @@ class Sops(models.Model):
     title = models.TextField()
     category = models.TextField()
     filename = models.TextField()
-    user = models.ForeignKey('Users', models.DB_CASCADE, blank=True, null=True)
+    user = models.ForeignKey('Users', models.CASCADE, blank=True, null=True)
 
     class Meta:
         managed = False
