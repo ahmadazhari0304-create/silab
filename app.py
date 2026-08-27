@@ -752,5 +752,5 @@ def dashboard_summary():
         "maintenance": maint_count
     })
 
-if __name__ == '__main__':
+if __name__ == '__main__' and not os.getenv('VERCEL'):
     app.run(debug=True, port=5000)
