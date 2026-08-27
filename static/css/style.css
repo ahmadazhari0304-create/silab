@@ -871,6 +871,7 @@
         background: #fff; border-radius: 24px; overflow: hidden;
         box-shadow: 0 20px 60px rgba(0,0,0,0.25);
         width: 320px; animation: cpSlideUp 0.3s ease;
+        max-height: 95vh; overflow-y: auto;
     }
     @keyframes cpSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 

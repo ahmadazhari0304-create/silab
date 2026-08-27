@@ -15,7 +15,7 @@
     
     
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
 </head>
 
 <body>
@@ -789,11 +789,11 @@
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                     <div class="form-group">
                         <label>Waktu Mulai</label>
-                        <input type="text" id="edit-book-start" required>
+                        <input type="text" id="edit-book-start" readonly inputmode="none" placeholder="Klik untuk pilih jam" onclick="this.blur(); window._cpOpen(this)" required>
                     </div>
                     <div class="form-group">
                         <label>Waktu Selesai</label>
-                        <input type="text" id="edit-book-end" required>
+                        <input type="text" id="edit-book-end" readonly inputmode="none" placeholder="Klik untuk pilih jam" onclick="this.blur(); window._cpOpen(this)" required>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1532,11 +1532,11 @@ window.onerror = function(message, source, lineno, colno, error) {
                         </div>
                         <div class="form-group">
                             <label for="book-start">Jam Mulai (Operasional 07:30 - 22:00)</label>
-                            <input type="text" id="book-start" max="22:00" required>
+                            <input type="text" id="book-start" readonly inputmode="none" placeholder="Klik untuk pilih jam" onclick="this.blur(); window._cpOpen(this)" max="22:00" required>
                         </div>
                         <div class="form-group">
                             <label for="book-end">Jam Selesai (Operasional 07:30 - 22:00)</label>
-                            <input type="text" id="book-end" max="22:00" required>
+                            <input type="text" id="book-end" readonly inputmode="none" placeholder="Klik untuk pilih jam" onclick="this.blur(); window._cpOpen(this)" max="22:00" required>
                         </div>
                         <div class="form-group full-width">
                             <label for="book-kelas">Tingkat / Kelas yang Meminjam</label>
