@@ -1,8 +1,7 @@
-import sys
-import os
+from flask import Flask
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if root_dir not in sys.path:
-    sys.path.insert(0, root_dir)
+app = Flask(__name__)
 
-from app import app
+@app.route('/')
+def home():
+    return "Hello from Vercel Flask Serverless!"
