@@ -1390,13 +1390,17 @@
 
     /* ── CLOCK PICKER ── */
     .clock-picker {
-        width: 90vw !important;
+        width: 92vw !important;
         max-width: 320px;
     }
 
+    .clock-picker-body {
+        padding: 16px 8px !important;
+    }
+
     .clock-face {
-        width: 200px !important;
-        height: 200px !important;
+        width: 240px !important;
+        height: 240px !important;
     }
 
     /* ── TOAST ── */
