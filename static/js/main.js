@@ -514,16 +514,20 @@
             let actionBtn = '';
             
             if (window.currentUserIsAdmin) {
+                actionBtn = `<div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">`;
+                
                 if (b.status === 'pending') {
-                    actionBtn = `
-                        <div style="display: flex; gap: 6px; justify-content: center;">
-                            <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'approved')" style="color:#1B8A7A; background: rgba(27,138,122,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Setujui</button>
-                            <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'rejected')" style="color:#C53030; background: rgba(197,48,48,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Tolak</button>
-                        </div>
+                    actionBtn += `
+                        <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'approved')" style="color:#1B8A7A; background: rgba(27,138,122,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Setujui</button>
+                        <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'rejected')" style="color:#C53030; background: rgba(197,48,48,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Tolak</button>
                     `;
-                } else {
-                    actionBtn = `<span style="font-size:12px; color:var(--text-muted);">-</span>`;
                 }
+                
+                // Edit and Delete buttons for Admin
+                actionBtn += `
+                    <button class="btn-table" onclick="editBooking(${b.id})" style="color:var(--primary); background: rgba(33, 150, 243, 0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Edit</button>
+                    <button class="btn-table" onclick="deleteBooking(${b.id})" style="color:#d9534f; background: rgba(217,83,79,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Hapus</button>
+                </div>`;
             } else {
                 if (b.status === 'pending') {
                     actionBtn = `
