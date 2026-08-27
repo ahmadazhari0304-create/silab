@@ -153,6 +153,17 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(26, 26, 46, 0.3);
         }
+        
+        .btn-sm {
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+            border-radius: var(--radius-sm) !important;
+            height: auto !important;
+        }
+        .btn-sm svg {
+            width: 16px !important;
+            height: 16px !important;
+        }
         .btn-submit:hover::before { left: 100%; }
         .btn-submit:active { transform: translateY(0); }
 
