@@ -1461,38 +1461,7 @@ window.onerror = function(message, source, lineno, colno, error) {
 
     
 
-    <!-- SOP Upload Modal -->
-    <div id="modal-sop-upload" class="modal-overlay" onclick="closeModals(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="document.getElementById('modal-sop-upload').style.display='none'">&times;</button>
-            <div class="modal-header">
-                <h2>Tambah SOP Baru</h2>
-            </div>
-            <form id="form-sop-upload" onsubmit="submitSopUpload(event)">
-                <div class="form-group">
-                    <label>Nama Prosedur / Tindakan</label>
-                    <input type="text" id="sop-title" required placeholder="Contoh: Pemasangan Infus">
-                </div>
-                <div class="form-group">
-                    <label>Kategori</label>
-                    <select id="sop-category" required>
-                        <option value="Prosedur Medis">Prosedur Medis</option>
-                        <option value="Penggunaan Alat">Penggunaan Alat</option>
-                        <option value="Keselamatan">Keselamatan</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>File SOP (PDF)</label>
-                    <input type="file" id="sop-file" accept="application/pdf" required>
-                </div>
-                <div style="margin-top:24px; display:flex; gap:12px; justify-content:flex-end;">
-                    <button type="button" class="btn-cancel" onclick="document.getElementById('modal-sop-upload').style.display='none'">Batal</button>
-                    <button type="submit" class="btn-submit">Upload SOP</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <!-- Add Booking Modal -->
     <div id="modal-add-booking" class="modal-overlay" onclick="closeModals(event)">

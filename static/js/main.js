@@ -1,4 +1,4 @@
-
+﻿
     // =============================================
     // MAIN APPLICATION JAVASCRIPT
     // =============================================
@@ -778,10 +778,19 @@
 
     async function submitSOP(e) {
         e.preventDefault();
+        const title = document.getElementById('sop-title').value;
+        const category = document.getElementById('sop-category').value;
+        const fileInput = document.getElementById('sop-file');
+        
+        if (!fileInput.files.length) {
+            showToast('Pilih file PDF terlebih dahulu', true);
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('title', document.getElementById('sop-title').value);
-        formData.append('category', document.getElementById('sop-category').value);
-        formData.append('file', document.getElementById('sop-file').files[0]);
+        formData.append('title', title);
+        formData.append('category', category);
+        formData.append('file', fileInput.files[0]);
 
         try {
             const res = await fetch('/api/sops', { method: 'POST', body: formData });
@@ -790,7 +799,7 @@
                 showToast(data.message);
                 document.getElementById('form-sop').reset();
                 loadSOP();
-                const modal = document.getElementById('modal-sop');
+                const modal = document.getElementById('sop-upload-modal');
                 if (modal) modal.style.display = 'none';
             } else { showToast(data.message, true); }
         } catch (err) { showToast('Gagal upload SOP', true); }
@@ -1003,7 +1012,7 @@
                         <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:#f8fafc; border-radius:12px; border-left: 4px solid #1B8A7A;">
                             <div style="flex:1;">
                                 <div style="font-size:14px; font-weight:700; color:#1e293b;">${b.nama_lab}</div>
-                                <div style="font-size:12px; color:#64748b; margin-top:2px;">${b.start_time} – ${b.end_time} &middot; ${b.kelas || ''}</div>
+                                <div style="font-size:12px; color:#64748b; margin-top:2px;">${b.start_time} â€“ ${b.end_time} &middot; ${b.kelas || ''}</div>
                             </div>
                             <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:rgba(27,138,122,0.12); color:#1B8A7A;">Aktif</span>
                         </div>`;
@@ -1413,39 +1422,12 @@ function openSopUploadModal() {
     document.getElementById('sop-title').value = '';
     document.getElementById('sop-category').value = 'Prosedur Medis';
     document.getElementById('sop-file').value = '';
-    document.getElementById('modal-sop-upload').style.display = 'flex';
+    document.getElementById('sop-upload-modal').style.display = 'flex';
 }
 
-async function submitSopUpload(e) {
-    e.preventDefault();
-    const title = document.getElementById('sop-title').value;
-    const category = document.getElementById('sop-category').value;
-    const fileInput = document.getElementById('sop-file');
-    
-    if (!fileInput.files.length) {
-        showToast('Pilih file PDF terlebih dahulu', true);
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category);
-    formData.append('file', fileInput.files[0]);
-    
-    try {
-        const res = await fetch('/api/sops', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-            showToast(data.message);
-            document.getElementById('modal-sop-upload').style.display = 'none';
-            loadSOP();
-        } else {
-            showToast(data.message, true);
-        }
-    } catch (err) {
-        showToast('Gagal mengupload SOP', true);
-    }
+function closeSopUploadModal() {
+    document.getElementById('sop-upload-modal').style.display = 'none';
 }
+
+
+

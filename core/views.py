@@ -1,4 +1,4 @@
-﻿import os
+import os
 import time
 from functools import wraps
 from django.shortcuts import render, redirect
@@ -338,7 +338,9 @@ def delete_sop(request, sop_id):
 
 @login_required
 def serve_sop_file(request, filename):
-    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+    from urllib.parse import unquote
+    filename = unquote(filename)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'sops', filename)
     if os.path.exists(file_path):
         return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
     raise Http404("File not found")
