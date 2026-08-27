@@ -263,6 +263,7 @@
         {% endif %}
 
         <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
             <div class="form-group">
                 <label>Username</label>
                 <div class="input-wrapper">

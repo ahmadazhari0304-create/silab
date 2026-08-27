@@ -25,6 +25,12 @@ DEBUG = os.getenv('FLASK_ENV') == 'development' or os.getenv('DEBUG', 'True') ==
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://silab-xi.vercel.app',
+    'https://silab-giea3naf2-asdos.vercel.app',
+    'https://*.vercel.app'
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

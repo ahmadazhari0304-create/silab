@@ -42,9 +42,28 @@ def dashboard(request):
         'username': request.session.get('username')
     })
 
+from django.contrib import messages
+
 def login_view(request):
     if request.session.get('user_id'):
         return redirect('dashboard')
+        
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        try:
+            user = Users.objects.get(username=username)
+            if check_password_hash(user.password_hash, password):
+                request.session['user_id'] = user.id
+                request.session['username'] = user.username
+                request.session['is_admin'] = bool(user.is_admin)
+                return redirect('dashboard')
+            else:
+                messages.error(request, 'Username atau password salah!')
+        except Users.DoesNotExist:
+            messages.error(request, 'Username atau password salah!')
+            
     return render(request, 'login.html')
 
 @login_required

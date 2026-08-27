@@ -131,6 +131,7 @@
         {% endif %}
 
         <form action="{% url 'register' %}" method="POST">
+            {% csrf_token %}
             <div class="form-group">
                 <label>Username</label>
                 <input type="text" name="username" required placeholder="Pilih username">
