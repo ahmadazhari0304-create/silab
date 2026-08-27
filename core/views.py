@@ -296,14 +296,13 @@ def handle_sops(request):
             return JsonResponse({"status": "error", "message": "Semua field dan file wajib diisi!"}, status=400)
             
         if file.name.lower().endswith('.pdf'):
-            filename = secure_filename(file.name)
-            unique_filename = f"{int(time.time())}_{filename}"
-            upload_path = os.path.join(settings.MEDIA_ROOT, unique_filename)
-            os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+            import base64
+            file_data = file.read()
+            if len(file_data) > 3 * 1024 * 1024:
+                return JsonResponse({"status": "error", "message": "Ukuran maksimal PDF 3MB"}, status=400)
             
-            with open(upload_path, 'wb+') as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
+            base64_data = base64.b64encode(file_data).decode('utf-8')
+            unique_filename = f"b64:{base64_data}"
                     
             try:
                 sop = Sops(
@@ -328,9 +327,13 @@ def delete_sop(request, sop_id):
         
     try:
         sop = Sops.objects.get(id=sop_id)
-        file_path = os.path.join(settings.MEDIA_ROOT, sop.filename)
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        if not sop.filename.startswith("b64:"):
+            try:
+                file_path = os.path.join(settings.MEDIA_ROOT, 'sops', sop.filename)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception:
+                pass
         sop.delete()
         return JsonResponse({"status": "success", "message": "SOP berhasil dihapus!"})
     except Exception as e:
@@ -339,7 +342,23 @@ def delete_sop(request, sop_id):
 @login_required
 def serve_sop_file(request, filename):
     from urllib.parse import unquote
+    import base64
+    from django.http import HttpResponse
     filename = unquote(filename)
+    
+    if filename.startswith("id_"):
+        try:
+            sop_id = int(filename[3:].replace(".pdf", ""))
+            sop = Sops.objects.get(id=sop_id)
+            if sop.filename.startswith("b64:"):
+                b64_data = sop.filename[4:]
+                pdf_data = base64.b64decode(b64_data)
+                response = HttpResponse(pdf_data, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="{sop.title}.pdf"'
+                return response
+        except Exception:
+            pass
+
     file_path = os.path.join(settings.MEDIA_ROOT, 'sops', filename)
     if os.path.exists(file_path):
         return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
