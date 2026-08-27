@@ -11,6 +11,19 @@ from werkzeug.utils import secure_filename
 from .models import Users, Labs, Items, Bookings, Bhp, Sops, Maintenance
 from datetime import date
 import json
+from django.db.models import Q
+
+def check_conflict(nama_lab, tanggal, start_time, end_time, exclude_id=None):
+    conflicts = Bookings.objects.filter(
+        nama_lab=nama_lab,
+        tanggal=tanggal,
+        status='approved'
+    ).exclude(
+        Q(end_time__lte=start_time) | Q(start_time__gte=end_time)
+    )
+    if exclude_id:
+        conflicts = conflicts.exclude(id=exclude_id)
+    return conflicts.exists()
 
 # Decorator Custom untuk Login
 def login_required(view_func):
@@ -270,6 +283,9 @@ def handle_bookings(request):
             return JsonResponse({"status": "error", "message": "Semua field wajib diisi!"}, status=400)
             
         try:
+            if check_conflict(data['nama_lab'], data['tanggal'], data['start_time'], data['end_time']):
+                return JsonResponse({"status": "error", "message": "Jadwal bentrok dengan peminjaman yang sudah disetujui!"}, status=400)
+                
             booking = Bookings(
                 nama_lab=data['nama_lab'],
                 tanggal=data['tanggal'],
@@ -522,6 +538,9 @@ def handle_booking_detail(request, id):
                 if not all(data.get(field) for field in required_fields):
                     return JsonResponse({"status": "error", "message": "Semua field wajib diisi!"}, status=400)
                 
+                if check_conflict(data['nama_lab'], data['tanggal'], data['start_time'], data['end_time'], exclude_id=id):
+                    return JsonResponse({"status": "error", "message": "Jadwal bentrok dengan peminjaman yang sudah disetujui!"}, status=400)
+                
                 booking.nama_lab = data['nama_lab']
                 booking.tanggal = data['tanggal']
                 booking.start_time = data['start_time']
@@ -551,6 +570,10 @@ def update_booking_status(request, id):
     
     try:
         booking = Bookings.objects.get(id=id)
+        if status == 'approved':
+            if check_conflict(booking.nama_lab, booking.tanggal, booking.start_time, booking.end_time, exclude_id=id):
+                return JsonResponse({"status": "error", "message": "Tidak dapat menyetujui, jadwal bentrok!"}, status=400)
+                
         booking.status = status
         booking.save()
         return JsonResponse({"status": "success", "message": f"Peminjaman berhasil di-{status}"})
