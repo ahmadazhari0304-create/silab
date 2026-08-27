@@ -1326,6 +1326,8 @@
     .table-container, .card, .grid-container {
         padding: 16px !important;
         border-radius: 14px !important;
+        overflow-x: auto !important;
+        max-width: 100% !important;
     }
 
     table {
