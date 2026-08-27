@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -254,15 +254,13 @@
             <p>Senang melihat Anda lagi. Silakan masukkan detail akun Anda.</p>
         </div>
 
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul class="flash-messages">
-            {% for message in messages %}
-              <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
+        {% if messages %}
+          <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
 
         <form action="{% url 'login' %}" method="POST">
             <div class="form-group">

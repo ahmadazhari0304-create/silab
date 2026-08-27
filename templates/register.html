@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -122,7 +122,6 @@
         <h2>SILAB</h2>
         <p>Daftar akun baru</p>
 
-        {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class="flash-messages">
             {% for message in messages %}
@@ -130,7 +129,6 @@
             {% endfor %}
         </ul>
         {% endif %}
-        {% endwith %}
 
         <form action="{% url 'register' %}" method="POST">
             <div class="form-group">
