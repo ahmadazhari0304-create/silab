@@ -196,6 +196,7 @@
                 <button type="button" onclick="openProfileModal()" style="width:100%; text-align:left; background:none; border:none; padding:8px; cursor:pointer; font-size:13px; font-weight:600; color:#2A2A2E;">Ganti Password</button>
                 <div style="height:1px; background:#eee; margin:4px 0;"></div>
                 <form action="{% url 'api_logout' %}" method="POST" style="margin: 0;">
+                    {% csrf_token %}
                     <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; cursor:pointer; font-weight:600; color: #1B8A7A; border-radius:8px;">Log Out</button>
                 </form>
             </div>
