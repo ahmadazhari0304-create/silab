@@ -1,8 +1,8 @@
 import os
-import pandas as pd
-from io import BytesIO
+import io
+import csv
 import time
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -223,8 +223,6 @@ def get_bookings():
         if current_user.is_admin:
             response = supabase.table('bookings').select('*, users(username)').order('tanggal', desc=True).order('start_time').execute()
         else:
-            # Supabase doesn't easily support OR with relational joins in a single simple query, 
-            # we fetch all and filter in python, or use the .or_ filter
             response = supabase.table('bookings').select('*, users(username)').or_(f"user_id.eq.{current_user.id},status.eq.approved").order('tanggal', desc=True).order('start_time').execute()
             
         data = response.data
@@ -385,90 +383,83 @@ def delete_bhp(bhp_id):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/bookings/export', methods=['GET'])
+@app.route("/api/dashboard/export")
 @login_required
-def export_bookings_route():
-    prodi = request.args.get('prodi')
+def export_dashboard():
     try:
-        query = supabase.table('bookings').select('*').eq('user_id', current_user.id)
-        if prodi:
-            query = query.eq('prodi', prodi)
-        response = query.order('tanggal', desc=True).order('start_time').execute()
-        bookings_data = response.data
-        
+        bookings_response = supabase.table("bookings").select("*, users(username)").order('id', desc=True).execute()
+        bookings_data = bookings_response.data
         if not bookings_data:
             return jsonify({"status": "error", "message": "Tidak ada data peminjaman untuk diexport!"}), 404
 
-        df = pd.DataFrame(bookings_data)
-        if 'user_id' in df.columns:
-            df.drop('user_id', axis=1, inplace=True)
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write headers
+        writer.writerow(['ID', 'Peminjam', 'Ruang Lab', 'Tanggal', 'Waktu', 'Keperluan', 'Status', 'Username'])
+        
+        # Write data
+        for b in bookings_data:
+            username = b.get('users', {}).get('username', 'N/A') if b.get('users') else 'N/A'
+            writer.writerow([
+                b.get('id'),
+                b.get('peminjam'),
+                b.get('ruang_lab'),
+                b.get('tanggal'),
+                b.get('waktu'),
+                b.get('keperluan'),
+                b.get('status'),
+                username
+            ])
             
-        df.rename(columns={
-            'id': 'ID',
-            'nama_lab': 'Nama Lab',
-            'tanggal': 'Tanggal',
-            'start_time': 'Waktu Mulai',
-            'end_time': 'Waktu Selesai',
-            'kelas': 'Kelas',
-            'prodi': 'Program Studi',
-            'tujuan': 'Tujuan/Keperluan'
-        }, inplace=True)
-
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Jadwal Peminjaman')
         output.seek(0)
         
-        filename = f"Peminjaman_{prodi if prodi else 'All'}.xlsx"
-        return send_file(
-            output,
-            as_attachment=True,
-            download_name=filename,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=jadwal_peminjaman.csv"}
         )
     except Exception as e:
+        print("Export Error:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/bhp/export', methods=['GET'])
+@app.route("/api/bhp/export")
 @login_required
 def export_bhp():
-    prodi = request.args.get('prodi')
     try:
-        query = supabase.table('bhp').select('*').eq('user_id', current_user.id)
-        if prodi:
-            query = query.eq('prodi', prodi)
-        response = query.order('id', desc=True).execute()
-        bhp_data = response.data
-        
+        bhp_response = supabase.table("bhp").select("*, users(username)").order('id', desc=True).execute()
+        bhp_data = bhp_response.data
         if not bhp_data:
             return jsonify({"status": "error", "message": "Tidak ada data BHP untuk diexport!"}), 404
 
-        df = pd.DataFrame(bhp_data)
-        if 'user_id' in df.columns:
-            df.drop('user_id', axis=1, inplace=True)
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write headers
+        writer.writerow(['ID', 'Nama Barang', 'Praktikum', 'Jumlah', 'Tanggal', 'Prodi', 'Username'])
+        
+        # Write data
+        for b in bhp_data:
+            username = b.get('users', {}).get('username', 'N/A') if b.get('users') else 'N/A'
+            writer.writerow([
+                b.get('id'),
+                b.get('nama_barang'),
+                b.get('praktikum'),
+                b.get('jumlah'),
+                b.get('tanggal'),
+                b.get('prodi'),
+                username
+            ])
             
-        df.rename(columns={
-            'id': 'ID',
-            'nama_barang': 'Nama Barang',
-            'praktikum': 'Praktikum',
-            'jumlah': 'Jumlah',
-            'tanggal': 'Tanggal',
-            'prodi': 'Program Studi'
-        }, inplace=True)
-
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Log Pemakaian BHP')
         output.seek(0)
         
-        filename = f"BHP_{prodi if prodi else 'All'}.xlsx"
-        return send_file(
-            output,
-            as_attachment=True,
-            download_name=filename,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=log_bhp.csv"}
         )
     except Exception as e:
+        print("Export Error:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads", "sops")

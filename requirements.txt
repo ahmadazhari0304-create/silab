@@ -1,7 +1,5 @@
 Flask
 Werkzeug
-pandas
-openpyxl
 supabase
 python-dotenv
 Flask-Login
