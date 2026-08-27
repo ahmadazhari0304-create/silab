@@ -161,16 +161,85 @@ def api_logout(request):
     return redirect('login')
 
 @login_required
-@require_http_methods(["GET"])
-def get_labs(request):
-    labs = list(Labs.objects.values())
-    return JsonResponse(labs, safe=False)
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def handle_labs(request):
+    if request.method == 'GET':
+        labs = list(Labs.objects.values())
+        return JsonResponse(labs, safe=False)
+    elif request.method == 'POST':
+        if not request.session.get('is_admin'):
+            return JsonResponse({"status": "error", "message": "Akses ditolak!"}, status=403)
+        try:
+            data = json.loads(request.body)
+            nama_lab = data.get('nama_lab')
+            if not nama_lab:
+                return JsonResponse({"status": "error", "message": "Nama lab wajib diisi!"}, status=400)
+            Labs.objects.create(nama_lab=nama_lab, status='Tersedia')
+            return JsonResponse({"status": "success", "message": "Lab berhasil ditambahkan!"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 @login_required
-@require_http_methods(["GET"])
-def get_items(request):
-    items = list(Items.objects.values())
-    return JsonResponse(items, safe=False)
+@csrf_exempt
+@require_http_methods(["PUT", "DELETE"])
+def handle_lab_detail(request, lab_id):
+    if not request.session.get('is_admin'):
+        return JsonResponse({"status": "error", "message": "Akses ditolak!"}, status=403)
+    try:
+        lab = Labs.objects.get(id=lab_id)
+        if request.method == 'DELETE':
+            lab.delete()
+            return JsonResponse({"status": "success", "message": "Lab berhasil dihapus!"})
+        elif request.method == 'PUT':
+            data = json.loads(request.body)
+            lab.nama_lab = data.get('nama_lab', lab.nama_lab)
+            lab.status = data.get('status', lab.status)
+            lab.save()
+            return JsonResponse({"status": "success", "message": "Lab berhasil diupdate!"})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+@login_required
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def handle_items(request):
+    if request.method == 'GET':
+        items = list(Items.objects.values())
+        return JsonResponse(items, safe=False)
+    elif request.method == 'POST':
+        if not request.session.get('is_admin'):
+            return JsonResponse({"status": "error", "message": "Akses ditolak!"}, status=403)
+        try:
+            data = json.loads(request.body)
+            nama_barang = data.get('nama_barang')
+            value = data.get('value', '1')
+            if not nama_barang:
+                return JsonResponse({"status": "error", "message": "Nama barang wajib diisi!"}, status=400)
+            Items.objects.create(nama_barang=nama_barang, value=value)
+            return JsonResponse({"status": "success", "message": "Barang berhasil ditambahkan!"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+@login_required
+@csrf_exempt
+@require_http_methods(["PUT", "DELETE"])
+def handle_item_detail(request, item_id):
+    if not request.session.get('is_admin'):
+        return JsonResponse({"status": "error", "message": "Akses ditolak!"}, status=403)
+    try:
+        item = Items.objects.get(id=item_id)
+        if request.method == 'DELETE':
+            item.delete()
+            return JsonResponse({"status": "success", "message": "Barang berhasil dihapus!"})
+        elif request.method == 'PUT':
+            data = json.loads(request.body)
+            item.nama_barang = data.get('nama_barang', item.nama_barang)
+            item.value = data.get('value', item.value)
+            item.save()
+            return JsonResponse({"status": "success", "message": "Barang berhasil diupdate!"})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 @login_required
 @csrf_exempt

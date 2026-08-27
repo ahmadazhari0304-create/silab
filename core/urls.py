@@ -20,8 +20,10 @@ urlpatterns = [
     path('api/logout', views.api_logout, name='api_logout'),
 
     # APIs
-    path('api/labs', views.get_labs, name='get_labs'),
-    path('api/items', views.get_items, name='get_items'),
+    path('api/labs', views.handle_labs, name='handle_labs'),
+    path('api/labs/<int:lab_id>', views.handle_lab_detail, name='handle_lab_detail'),
+    path('api/items', views.handle_items, name='handle_items'),
+    path('api/items/<int:item_id>', views.handle_item_detail, name='handle_item_detail'),
     path('api/bookings', views.handle_bookings, name='handle_bookings'),
     path('api/bookings/<int:id>/status', views.update_booking_status, name='update_booking_status'),
     path('api/bhp', views.handle_bhp, name='handle_bhp'),
