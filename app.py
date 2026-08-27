@@ -22,9 +22,20 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-supabase_url = os.getenv("SUPABASE_URL", "https://hxsmcgsmsprguzbuiphy.supabase.co")
-supabase_key = os.getenv("SUPABASE_KEY", "sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn")
-supabase: Client = create_client(supabase_url, supabase_key)
+class LazySupabase:
+    def __init__(self):
+        self._client = None
+    @property
+    def client(self):
+        if self._client is None:
+            url = os.getenv("SUPABASE_URL", "https://hxsmcgsmsprguzbuiphy.supabase.co")
+            key = os.getenv("SUPABASE_KEY", "sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn")
+            self._client = create_client(url, key)
+        return self._client
+    def __getattr__(self, name):
+        return getattr(self.client, name)
+
+supabase = LazySupabase()
 
 class User(UserMixin):
     def __init__(self, id, username, is_admin):
