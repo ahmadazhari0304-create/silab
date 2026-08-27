@@ -1,0 +1,11 @@
+{
+  "name": "jadwal-lab",
+  "version": "1.0.0",
+  "description": "App for Vercel",
+  "scripts": {
+    "start": "python app.py",
+    "dev": "python app.py",
+    "build": "echo \"No node build step required for Python on Vercel\""
+  },
+  "dependencies": {}
+}

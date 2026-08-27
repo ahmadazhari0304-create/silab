@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SILAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #F0F9F7;
+            --bg-card: #ffffff;
+            --text-main: #2A2A2E;
+            --text-muted: #8a857e;
+            --primary: #249D8F;
+            --primary-hover: #1B7A6E;
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            /* Soft gradient background matching the app's light theme with a hint of primary color */
+            background-color: #F0F9F7;
+            background-image: none;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Background blur decorations */
+        
+
+        
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .brand-container svg {
+            width: 32px;
+            height: 32px;
+            color: var(--text-main);
+        }
+
+        .brand-container h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-card { 
+            background: var(--bg-card); 
+            padding: 48px; 
+            border-radius: 32px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+            width: 100%; 
+            max-width: 420px; 
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .auth-header h1 { 
+            margin: 0 0 8px 0; 
+            color: var(--text-main); 
+            font-weight: 800; 
+            font-size: 28px; 
+            letter-spacing: -0.5px;
+        }
+
+        .auth-header p { 
+            margin: 0;
+            color: var(--text-muted); 
+            font-size: 15px; 
+            line-height: 1.5;
+        }
+
+        .form-group { 
+            text-align: left; 
+            margin-bottom: 24px; 
+        }
+
+        .form-group label { 
+            display: block; 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            margin-bottom: 8px; 
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input { 
+            width: 100%; 
+            padding: 16px; 
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--border-color); 
+            border-radius: 16px; 
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-main);
+            outline: none; 
+            box-sizing: border-box; 
+            transition: all 0.2s ease; 
+        }
+
+        .form-group input::placeholder {
+            color: #A0AEC0;
+        }
+
+        .form-group input:focus { 
+            border-color: var(--primary); 
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(36, 157, 143, 0.15); 
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #A0AEC0;
+            padding: 0;
+            display: flex;
+        }
+        
+        .password-toggle:hover {
+            color: var(--text-main);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .remember-me input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary-hover);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .forgot-password:hover {
+            color: #1B7A6E;
+        }
+
+        .btn-submit { 
+            background: var(--primary); 
+            color: #ffffff; 
+            border: none; 
+            padding: 16px; 
+            width: 100%; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: transform 0.1s, background 0.2s; 
+            font-family: inherit;
+        }
+
+        .btn-submit:hover { 
+            background: var(--primary-hover); 
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .flash-messages { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0 0 24px 0; 
+        }
+
+        .flash-messages li { 
+            background: #FFF5F5; 
+            color: #C53030; 
+            border: 1px solid #FED7D7;
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            font-weight: 500;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 32px 24px;
+                border-radius: 24px;
+                box-shadow: none;
+                background: transparent;
+            }
+            body {
+                background: var(--bg-card);
+            }
+            .brand-container {
+                position: relative;
+                top: 0;
+                margin-bottom: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    
+
+    
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Selamat Datang!</h1>
+            <p>Senang melihat Anda lagi. Silakan masukkan detail akun Anda.</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flash-messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" required placeholder="Masukkan username Anda">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" required placeholder="Masukkan password Anda">
+                    <!-- Eye icon for password toggle -->
+                    <button type="button" class="password-toggle" onclick="togglePassword()" title="Tampilkan Password">
+                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="options-row">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember">
+                    Ingat saya
+                </label>
+                <a href="#" class="forgot-password" onclick="alert('Silakan hubungi administrator sistem untuk mereset password Anda.'); return false;">Lupa password?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">Log In</button>
+        </form>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                // Change to eye-off icon
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                passwordInput.type = 'password';
+                // Change back to eye icon
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
+</body>
+</html>

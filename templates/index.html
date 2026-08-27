@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Sistem Informasi Laboratorium</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    
+    
+    
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Admin Password Modal -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Verifikasi Admin</h3>
+                <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="verifyAdmin(event)">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="admin-password">Password Admin</label>
+                        <input type="password" id="admin-password" placeholder="Masukkan password" required>
+                    </div>
+                    <button type="submit" class="btn-submit" style="width: 100%;">Masuk</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOP Modal -->
+    <div class="modal" id="sop-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">SOP Details</h3>
+                <button class="modal-close" onclick="closeSopModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dinamis diisi lewat JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SOP Upload Modal -->
+    <div class="modal" id="sop-upload-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Tambah SOP Baru</h3>
+                <button class="modal-close" onclick="closeSopUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-sop" onsubmit="submitSOP(event)">
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="sop-title" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Nama Prosedur / Tindakan</label>
+                        <input type="text" id="sop-title" placeholder="Contoh: SOP Pemasangan Infus" required style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="sop-category" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Kategori</label>
+                        <select id="sop-category" required style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <option value="Jiwa & Dasar">Jiwa & Dasar</option>
+                            <option value="Medikal Bedah">Medikal Bedah</option>
+                            <option value="Anak & Kritis">Anak & Kritis</option>
+                            <option value="Dasar & Kritis">Dasar & Kritis</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="sop-file" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Pilih File PDF</label>
+                        <input type="file" id="sop-file" accept=".pdf" required style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn-submit" style="width: 100%;">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        Upload SOP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOP Edit Modal -->
+    <div class="modal" id="sop-edit-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Edit SOP</h3>
+                <button class="modal-close" onclick="closeSopEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-sop" onsubmit="submitEditSOP(event)">
+                    <input type="hidden" id="edit-sop-id">
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="edit-sop-title" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Nama Prosedur / Tindakan</label>
+                        <input type="text" id="edit-sop-title" required style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="edit-sop-category" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Kategori</label>
+                        <select id="edit-sop-category" required style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <option value="Jiwa & Dasar">Jiwa & Dasar</option>
+                            <option value="Medikal Bedah">Medikal Bedah</option>
+                            <option value="Anak & Kritis">Anak & Kritis</option>
+                            <option value="Dasar & Kritis">Dasar & Kritis</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="edit-sop-file" style="font-weight: 600; margin-bottom: 6px; font-size: 14px;">Update File PDF (Opsional)</label>
+                        <input type="file" id="edit-sop-file" accept=".pdf" style="padding: 10px 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn-submit" style="width: 100%; background: var(--primary);">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <div class="sidebar-brand">
+            <svg viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            </svg>
+            <div class="brand-text">
+                <h2>SILAB</h2>
+                <p>Sistem Informasi Lab Keperawatan</p>
+                <div id="server-status" class="status-badge status-offline"></div>
+                
+            </div>
+        </div>
+        
+        <div class="menu-list">
+            <button class="menu-btn active" onclick="switchTab('home')" title="Dashboard">
+                <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>Beranda</span>
+            </button>
+            <button class="menu-btn" onclick="switchTab('peminjaman')" title="Peminjaman">
+                <svg viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>Peminjaman Lab</span>
+            </button>
+            <button class="menu-btn" onclick="switchTab('bhp')" title="BHP">
+                <svg viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <span>Pemakaian BHP</span>
+            </button>
+            <button class="menu-btn" onclick="switchTab('sop')" title="SOP">
+                <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>Dokumen SOP</span>
+            </button>
+            <button class="menu-btn" id="nav-data-silab" onclick="switchTab('data-silab')" style="display: none;" title="Data">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                <span>Data SILAB</span>
+            </button>
+            <button class="menu-btn admin-only" id="nav-kelola-pengguna" onclick="switchTab('kelola-pengguna')" style="display: none;" title="Kelola Pengguna">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span>Kelola Pengguna</span>
+            </button>
+        </div>
+        
+        <div class="sidebar-profile">
+            <div class="avatar" onclick="toggleProfileDropdown()" style="cursor: pointer;">
+                <img src="https://ui-avatars.com/api/?name={{ username }}&background=e0e0e0&color=2A2A2E" alt="Profile">
+            </div>
+            <div class="info">
+                <strong>{{ username }}</strong>
+                <span>{% if is_admin %}Admin{% else %}Pengguna{% endif %}</span>
+            </div>
+            <div id="profile-dropdown" style="display:none; position:absolute; bottom: 60px; left: 10px; background: #fff; padding: 8px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
+
+                <button type="button" onclick="openProfileModal()" style="width:100%; text-align:left; background:none; border:none; padding:8px; cursor:pointer; font-size:13px; font-weight:600; color:#2A2A2E;">Ganti Password</button>
+                <div style="height:1px; background:#eee; margin:4px 0;"></div>
+                <form action="{{ url_for('logout') }}" method="POST" style="margin: 0;">
+                    <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; cursor:pointer; font-weight:600; color: #1B8A7A; border-radius:8px;">Log Out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- TAB: HOME / DASHBOARD -->
+        
+        <!-- TAB: HOME / DASHBOARD -->
+        <div id="home" class="tab-content active">
+
+            <!-- ====== DASHBOARD HEADER ====== -->
+            <div class="dash-topbar">
+                <div class="dash-greeting">
+                    <div class="greeting-icon">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="greeting-title">Halo, {{ username }}! 👋</h1>
+                        <p class="greeting-sub">Selamat datang — <span id="current-date">Hari ini</span></p>
+                    </div>
+                </div>
+                <div class="dash-actions">
+                    <div class="dash-searchbar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="calendar-search" placeholder="Cari peminjaman..." oninput="filterBookings()">
+                    </div>
+                    <button class="dash-btn-primary" onclick="switchTab('peminjaman')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Tambah Peminjaman
+                    </button>
+                </div>
+            </div>
+
+            <!-- ====== STAT CARDS ROW ====== -->
+            <div class="stat-cards-row">
+                <div class="stat-card stat-card-emerald">
+                    <div class="stat-card-icon">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number" id="total-bookings-count">0</div>
+                        <div class="stat-label">Total Peminjaman</div>
+                    </div>
+                    <div class="stat-card-wave">
+                        <svg viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0 30 Q30 10 60 25 Q90 40 120 15 L120 40 L0 40 Z" fill="rgba(255,255,255,0.12)"/><path d="M0 35 Q30 18 60 30 Q90 42 120 22 L120 40 L0 40 Z" fill="rgba(255,255,255,0.08)"/></svg>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-blue">
+                    <div class="stat-card-icon">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number" id="total-labs-count">0</div>
+                        <div class="stat-label">Lab Tersedia</div>
+                    </div>
+                    <div class="stat-card-wave">
+                        <svg viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0 30 Q30 10 60 25 Q90 40 120 15 L120 40 L0 40 Z" fill="rgba(255,255,255,0.12)"/><path d="M0 35 Q30 18 60 30 Q90 42 120 22 L120 40 L0 40 Z" fill="rgba(255,255,255,0.08)"/></svg>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-amber">
+                    <div class="stat-card-icon">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number" id="count-pending">0</div>
+                        <div class="stat-label">Menunggu Konfirmasi</div>
+                    </div>
+                    <div class="stat-card-wave">
+                        <svg viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0 30 Q30 10 60 25 Q90 40 120 15 L120 40 L0 40 Z" fill="rgba(255,255,255,0.12)"/><path d="M0 35 Q30 18 60 30 Q90 42 120 22 L120 40 L0 40 Z" fill="rgba(255,255,255,0.08)"/></svg>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-red">
+                    <div class="stat-card-icon">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-number" id="count-maintenance">0</div>
+                        <div class="stat-label">Lab Perbaikan</div>
+                    </div>
+                    <div class="stat-card-wave">
+                        <svg viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0 30 Q30 10 60 25 Q90 40 120 15 L120 40 L0 40 Z" fill="rgba(255,255,255,0.12)"/><path d="M0 35 Q30 18 60 30 Q90 42 120 22 L120 40 L0 40 Z" fill="rgba(255,255,255,0.08)"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== MAIN GRID ====== -->
+            <div class="dash-main-grid">
+
+                <!-- LEFT COLUMN -->
+                <div class="dash-left-col">
+
+                    <!-- Jadwal Hari Ini -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title">
+                                <span class="dash-card-dot dot-emerald"></span>
+                                Jadwal Praktikum Hari Ini
+                            </div>
+                            <span class="dash-badge-count" id="today-schedule-badge">0</span>
+                        </div>
+                        <div id="today-schedule-list" class="schedule-list">
+                            <div class="dash-empty-state">
+                                <svg width="40" height="40" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <p>Tidak ada jadwal hari ini.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Donut Utilization + Active Stat -->
+                    <div class="dash-card utilization-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title">
+                                <span class="dash-card-dot dot-purple"></span>
+                                Tingkat Penggunaan Lab
+                            </div>
+                            <div id="utilization-badge" class="util-badge">Kosong</div>
+                        </div>
+                        <div class="util-body">
+                            <div class="donut-wrap">
+                                <svg class="donut-svg" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" stroke-width="12"/>
+                                    <circle id="donut-ring" cx="60" cy="60" r="50" fill="none" stroke="url(#donutGrad)" stroke-width="12" stroke-linecap="round"
+                                        stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)"/>
+                                    <defs>
+                                        <linearGradient id="donutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#1B8A7A"/>
+                                            <stop offset="100%" stop-color="#4EB8A8"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <text x="60" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="#1B8A7A" id="donut-text">0%</text>
+                                    <text x="60" y="72" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="600">TERPAKAI</text>
+                                </svg>
+                            </div>
+                            <div class="util-legend">
+                                <div class="util-leg-item">
+                                    <div class="util-leg-dot" style="background: linear-gradient(135deg, #1B8A7A, #4EB8A8);"></div>
+                                    <span>Lab Aktif</span>
+                                    <strong id="count-active" class="util-count">0</strong>
+                                </div>
+                                <div class="util-leg-item">
+                                    <div class="util-leg-dot" style="background: #f59e0b;"></div>
+                                    <span>Menunggu</span>
+                                    <strong class="util-count">-</strong>
+                                </div>
+                                <div class="util-leg-item">
+                                    <div class="util-leg-dot" style="background: #ef4444;"></div>
+                                    <span>Perbaikan</span>
+                                    <strong class="util-count">-</strong>
+                                </div>
+                                <button onclick="switchTab('peminjaman')" class="util-action-btn">
+                                    Lihat Semua Jadwal →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="dash-right-col">
+
+                    <!-- Recent Bookings -->
+                    <div class="dash-card" style="flex: 1;">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title">
+                                <span class="dash-card-dot dot-blue"></span>
+                                Peminjaman Terbaru Anda
+                            </div>
+                            <button onclick="switchTab('peminjaman')" class="dash-link-btn">Tambah Baru +</button>
+                        </div>
+                        <div class="list-items" id="active-booking-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto;">
+                            <div class="dash-empty-state">
+                                <svg width="36" height="36" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                <p>Belum ada peminjaman.</p>
+                            </div>
+                        </div>
+                        <span id="active-bookings-badge" style="display:none;"></span>
+                    </div>
+
+                    <!-- BHP Log -->
+                    <div class="dash-card" style="flex: 1;">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title">
+                                <span class="dash-card-dot dot-amber"></span>
+                                Log BHP Terbaru
+                            </div>
+                            <button onclick="switchTab('bhp')" class="dash-link-btn">Lihat Semua</button>
+                        </div>
+                        <div class="dash-table-wrap">
+                            <table class="dash-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Laboratorium</th>
+                                        <th>Barang</th>
+                                        <th style="text-align: right;">Jml</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-bhp-list">
+                                    <tr><td colspan="4" class="dash-td-empty">Belum ada log BHP.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+                <!-- TAB: SOP -->
+        <div id="sop" class="tab-content">
+            <div class="header-section" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1>Standard Operating Procedure (SOP)</h1>
+                    <p>Daftar panduan dan kuesioner praktikum laboratorium keperawatan</p>
+                </div>
+                {% if is_admin %}
+                <button id="btn-tambah-sop" class="btn-submit" onclick="openSopUploadModal()" style="gap: 8px; margin: 0;">
+                    <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                        <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Tambah SOP
+                </button>
+                {% endif %}
+            </div>
+
+            <div id="sop-list-section" style="width: 100%;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">No</th>
+                                <th>Nama Prosedur / Tindakan</th>
+                                <th>Kategori</th>
+                                <th style="width: 180px; text-align: center;">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-sop-body">
+                            <!-- Dinamis via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: BHP -->
+        <div id="bhp" class="tab-content">
+            <div class="header-section">
+                <h1>Barang Habis Pakai (BHP)</h1>
+                <p>Pencatatan konsumsi bahan habis pakai selama praktikum</p>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <!-- Sub-tab Navigation -->
+                <div style="display: flex; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 0px;">
+                    <button onclick="switchBhpProdi('D3')" id="btn-bhp-d3" style="background:none; border:none; padding:12px 16px; font-weight:700; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer; font-size:14px; transition:all 0.2s;">D3 Keperawatan</button>
+                    <button onclick="switchBhpProdi('S1')" id="btn-bhp-s1" style="background:none; border:none; padding:12px 16px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; font-size:14px; transition:all 0.2s;">S1 Keperawatan</button>
+                </div>
+
+            <div>
+                <div class="card-form" style="max-width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+                        <h3 id="bhp-log-title" style="margin-bottom: 0; font-weight: 700; color: var(--text-dark); border-bottom: none; padding-bottom: 0;">Riwayat Log Pemakaian (D3 Keperawatan)</h3>
+                        
+                        <div style="display: flex; gap: 12px;">
+                            <button onclick="document.getElementById('modal-add-bhp').style.display='flex';" class="btn-submit" style="padding: 8px 16px; font-size: 13px; gap: 6px;">
+                                <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Catat Pemakaian
+                            </button>
+                            <button id="btn-export-excel" onclick="exportBhpExcel()" class="btn-submit" style="padding: 8px 16px; font-size: 13px; gap: 6px; background-color: var(--success); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); display: none;">
+                                <svg style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Export Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama Barang</th>
+                                    <th>Praktikum</th>
+                                    <th style="width: 80px; text-align: center;">Jumlah</th>
+                                    <th style="width: 140px;">Tanggal</th>
+                                    <th id="bhp-aksi-th" style="width: 60px; text-align: center;">Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-bhp-body">
+                                <!-- Isi diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- TAB: PEMINJAMAN -->
+        <div id="peminjaman" class="tab-content">
+            <div class="header-section">
+                <h1>Form Peminjaman Laboratorium</h1>
+                <p>Reservasi jadwal ruangan laboratorium untuk ujian, praktikum, atau penelitian</p>
+            </div>
+            <div style="margin-top: 24px;">
+                <!-- Sub-tab Navigation -->
+                <div style="display: flex; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 0px;">
+                    <button onclick="switchPinjamTab('form')" id="tab-btn-pinjam-form" style="background:none; border:none; padding:12px 16px; font-weight:700; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer; font-size:14px; transition:all 0.2s;">Form & Jadwal</button>
+                    <button onclick="switchPinjamTab('riwayat')" id="tab-btn-pinjam-riwayat" style="background:none; border:none; padding:12px 16px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; font-size:14px; transition:all 0.2s;">Riwayat Peminjaman</button>
+                </div>
+
+                <!-- Form & Jadwal Tab -->
+                <div id="pinjam-tab-form" style="display: block;">
+                                        <div class="split-container">
+                        <div class="split-left" style="display:flex; flex-direction:column; gap:24px;">
+
+    <!-- Widget 2: Dark Calendar -->
+                <div class="widget-card widget-calendar">
+                    <div class="cal-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button onclick="changeMonth(-1)" style="background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&#9664;</button>
+                            <h3 id="calendar-month-year" style="margin: 0; min-width: 130px; text-align: center;">Juli 2026</h3>
+                            <button onclick="changeMonth(1)" style="background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&#9654;</button>
+                        </div>
+                        <select id="calendar-lab-filter" onchange="filterBookings()">
+                            <option value="">Semua Lab</option>
+                        </select>
+                        <select id="calendar-prodi-filter" onchange="filterBookings()" style="display:none;">
+                            <option value="">Semua Kategori</option>
+                        </select>
+                    </div>
+                    
+                    <div class="calendar-grid-headers" id="calendar-grid-headers">
+                        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                    </div>
+                    
+                    <div class="monthly-calendar-grid" id="monthly-calendar-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="cal-legend">
+                        <span><div class="dot"></div> Hari Ini</span>
+                        <span><div class="dot filled"></div> Booked</span>
+                        <span><div class="dot" style="background:#ED8936; border:none;"></div> Menunggu ACC</span>
+                    </div>
+                    
+                    <!-- Hidden elements needed by JS -->
+                    <div style="display:none;">
+                        <button id="btn-view-month"></button>
+                        <button id="btn-view-week"></button>
+                        <button id="btn-view-day"></button>
+                    </div>
+                </div> <!-- End of widget-calendar -->
+            </div> <!-- End of split-left -->
+
+            <div class="split-right">
+                <div class="card-form" style="max-width: 100%;">
+                    <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Panduan Peminjaman</h3>
+                    <div style="color: var(--text-muted); line-height: 1.8; font-size: 14px;">
+                        <p style="margin-bottom: 12px;"><strong>1. Cek Ketersediaan:</strong> Lihat kalender di samping untuk memeriksa jadwal yang masih kosong. Jika ada banyak jadwal di satu hari, Anda dapat mengeklik tanggal tersebut untuk melihat rinciannya.</p>
+                        <p style="margin-bottom: 12px;"><strong>2. Buat Pengajuan:</strong> Klik pada tanggal yang Anda inginkan di kalender, lalu klik tombol <strong>"Pinjam Lab di Tanggal Ini"</strong> pada layar pop-up yang muncul.</p>
+                        <p style="margin-bottom: 12px;"><strong>3. Isi Formulir:</strong> Lengkapi data peminjaman (jam, kelas, prodi, dan tujuan) dengan benar.</p>
+                        <p style="margin-bottom: 12px;"><strong>4. Proses Persetujuan:</strong> Jadwal Anda akan berstatus <em>Menunggu Konfirmasi</em> (berwarna kuning). Admin akan memeriksa dan menyetujuinya. Jika disetujui, jadwal akan berwarna hijau.</p>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of split-container -->
+    </div> <!-- End of pinjam-tab-form -->
+
+                <!-- Riwayat Peminjaman Tab -->
+                <div id="pinjam-tab-riwayat" style="display: none;">
+            <!-- Riwayat Peminjaman (Full Width) -->
+            <div class="card-form" style="max-width: 100%;">
+                <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Daftar Riwayat Peminjaman</h3>
+                <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Laboratorium</th>
+                                <th>Tanggal</th>
+                                <th>Durasi</th>
+                                <th>Status</th>
+                                <th style="width: 140px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-bookings-body">
+                            <!-- Isi otomatis dari JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+            
+            </div>
+</div>
+
+        <!-- TAB: DATA SILAB -->
+        <div id="data-silab" class="tab-content">
+            <div class="header-section">
+                <h1>Data SILAB</h1>
+                <p>Menu khusus admin untuk pengelolaan data laboratorium</p>
+            </div>
+            
+            <div style="margin-top: 24px;">
+                <!-- Sub-tab Navigation -->
+                <div style="display: flex; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 0px;">
+                    <button onclick="switchSilabTab('lab')" id="tab-btn-lab" style="background:none; border:none; padding:12px 16px; font-weight:700; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer; font-size:14px; transition:all 0.2s;">Data Laboratorium</button>
+                    <button onclick="switchSilabTab('bhp')" id="tab-btn-bhp" style="background:none; border:none; padding:12px 16px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; font-size:14px; transition:all 0.2s;">Data Barang BHP</button>
+                </div>
+
+                <!-- Kelola Lab Tab -->
+                <div id="silab-tab-lab" style="display: block;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Kelola Data Laboratorium</h3>
+                        <form id="form-add-lab" onsubmit="submitLab(event)">
+                            <div class="form-group">
+                                <label for="new-lab-name">Nama Laboratorium Baru</label>
+                                <div style="display: flex; gap: 12px;">
+                                    <input type="text" id="new-lab-name" placeholder="Contoh: Lab ICU" required style="flex: 1;">
+                                    <button type="submit" class="btn-submit" style="padding: 10px 20px;">Tambah</button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto; margin-top: 24px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nama Laboratorium</th>
+                                        <th>Status</th>
+                                        <th style="width: 180px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-lab-body">
+                                    <!-- Diisi via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kelola Barang Tab -->
+                <div id="silab-tab-bhp" style="display: none;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Kelola Data Barang BHP</h3>
+                        <form id="form-add-item" onsubmit="submitItem(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="new-item-name">Label Barang (Tampil di Dropdown)</label>
+                                    <input type="text" id="new-item-name" placeholder="Contoh: Kassa Steril (Pack)" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-item-val">Value (Singkat)</label>
+                                    <input type="text" id="new-item-val" placeholder="Contoh: Kassa" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit" style="margin-top: 8px;">Tambah Barang</button>
+                        </form>
+                        
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto; margin-top: 24px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Label Tampilan</th>
+                                        <th>Value</th>
+                                        <th style="width: 120px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-item-body">
+                                    <!-- Diisi via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+
+    <!-- Script Utama -->
+    
+
+
+    <!-- Custom Confirm Modal -->
+    <div id="modal-confirm" class="modal-overlay" style="display:none; z-index: 10000;" onclick="closeConfirmModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 380px; text-align: center; padding: 32px 24px; border-radius: 16px;">
+            <div style="margin-bottom: 20px; color: #d9534f; display:flex; justify-content:center;">
+                <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" fill="none" stroke-width="2" style="background: rgba(217,83,79,0.1); padding: 16px; border-radius: 50%;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3 style="margin-bottom: 12px; color: var(--text-dark); font-size: 20px; font-weight:700;">Konfirmasi Tindakan</h3>
+            <p id="confirm-message" style="color: var(--text-muted); margin-bottom: 24px; font-size: 15px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="document.getElementById('modal-confirm').style.display='none'" class="btn-submit" style="flex: 1; justify-content: center; padding: 12px; font-size: 14px; background: #f1f5f9; color: #475569; box-shadow: none;">Batal</button>
+                <button onclick="executeConfirm()" class="btn-submit" style="flex: 1; justify-content: center; padding: 12px; font-size: 14px; background: #d9534f; box-shadow: 0 4px 12px rgba(217,83,79,0.3);">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile/Password Modal -->
+    <div id="modal-profile" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-profile').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Ganti Password</h2>
+            </div>
+            <form id="form-password" onsubmit="submitPassword(event)">
+                <div class="form-group">
+                    <label>Password Lama</label>
+                    <input type="password" id="old-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input type="password" id="new-password" required>
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; justify-content:center;">Simpan Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Peminjaman Modal -->
+    <div id="modal-edit-booking" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-edit-booking').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Edit Jadwal Peminjaman</h2>
+            </div>
+            <form id="form-edit-booking" onsubmit="submitEditBooking(event)">
+                <input type="hidden" id="edit-book-id">
+                <div class="form-group">
+                    <label>Laboratorium</label>
+                    <select id="edit-book-lab" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="date" id="edit-book-tanggal" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label>Waktu Mulai</label>
+                        <input type="text" id="edit-book-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Waktu Selesai</label>
+                        <input type="text" id="edit-book-end" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tujuan/Keperluan</label>
+                    <input type="text" id="edit-book-tujuan" required>
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; justify-content:center;">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Edit Lab Modal -->
+    <div id="modal-edit-lab" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-edit-lab').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Edit Laboratorium</h2>
+            </div>
+            <form id="form-edit-lab" onsubmit="submitEditLab(event)">
+                <input type="hidden" id="edit-lab-id">
+                <div class="form-group">
+                    <label>Nama Laboratorium</label>
+                    <input type="text" id="edit-lab-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-lab-status" required>
+                        <option value="Tersedia">Tersedia</option>
+                        <option value="Perbaikan">Lagi ada perbaikan</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; justify-content:center;">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Add BHP Modal -->
+    <div id="modal-add-bhp" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-add-bhp').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Catat Pemakaian BHP</h2>
+            </div>
+            <form id="form-bhp" onsubmit="submitBHP(event)">
+                <div class="form-group">
+                    <label for="bhp-barang">Nama Barang</label>
+                    <select id="bhp-barang" required style="padding: 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 12px;">
+                        <option value="">Pilih Barang...</option>
+                        <!-- Diisi via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bhp-praktikum">Praktikum / Agenda</label>
+                    <input type="text" id="bhp-praktikum" placeholder="Contoh: Praktikum Pemasangan Infus" required>
+                </div>
+                <div class="form-group">
+                    <label for="bhp-jumlah">Jumlah Pemakaian</label>
+                    <input type="number" id="bhp-jumlah" min="1" placeholder="Masukkan angka" required>
+                </div>
+                <div class="form-group">
+                    <label for="bhp-tanggal">Tanggal Pemakaian</label>
+                    <input type="date" id="bhp-tanggal" required>
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%; justify-content: center;">
+                    <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                        <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Simpan Catatan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit BHP Modal -->
+    <div id="modal-edit-bhp" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-edit-bhp').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Edit Pemakaian BHP</h2>
+            </div>
+            <form id="form-edit-bhp" onsubmit="submitEditBHP(event)">
+                <input type="hidden" id="edit-bhp-id">
+                <div class="form-group">
+                    <label>Barang/Alat</label>
+                    <select id="edit-bhp-barang" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="date" id="edit-bhp-tanggal" required>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="number" id="edit-bhp-jumlah" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Mata Kuliah Praktikum</label>
+                    <input type="text" id="edit-bhp-praktikum" required>
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; justify-content:center;">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+
+<!-- Custom Analog Clock Picker -->
+<!-- TAB: KELOLA PENGGUNA -->
+        <div id="kelola-pengguna" class="tab-content">
+            <div class="header-section">
+                <h1>Kelola Pengguna</h1>
+                <p>Menu khusus admin untuk manajemen akun pengguna</p>
+            </div>
+            <div class="split-container" style="margin-top: 24px;">
+                
+                <!-- Left: Add User Form -->
+                <div class="split-left" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Tambah Pengguna Baru</h3>
+                        <form id="form-add-user" onsubmit="submitUser(event)">
+                            <div class="form-group">
+                                <label for="add-user-username">Username</label>
+                                <input type="text" id="add-user-username" placeholder="Masukkan username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-user-password">Password</label>
+                                <input type="password" id="add-user-password" placeholder="Masukkan password" required>
+                            </div>
+                            <div class="form-group" style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="add-user-is-admin" style="width: 16px; height: 16px;">
+                                <label for="add-user-is-admin" style="margin: 0; font-size: 14px;">Beri Akses Admin</label>
+                            </div>
+                            <button type="submit" class="btn-submit" style="margin-top: 16px; width: 100%;">Tambah Pengguna</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right: Users Table -->
+                <div class="split-right" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Daftar Pengguna</h3>
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th style="width: 150px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-user-body">
+                                    <!-- Diisi via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB: MAINTENANCE -->
+        <div id="maintenance" class="tab-content" style="display: none;">
+            <div class="header-section">
+                <h1>Perbaikan Lab</h1>
+                <p>Manajemen jadwal perbaikan laboratorium</p>
+            </div>
+            
+            <div class="split-container" style="margin-top: 24px;">
+                <div class="split-left" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Tambah Perbaikan</h3>
+                        <form id="form-add-maintenance" onsubmit="submitMaintenance(event)">
+                            <div class="form-group">
+                                <label>Pilih Lab</label>
+                                <select id="maint-lab" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Mulai</label>
+                                <input type="date" id="maint-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Selesai</label>
+                                <input type="date" id="maint-end" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Keterangan</label>
+                                <input type="text" id="maint-ket" placeholder="Contoh: AC rusak" required>
+                            </div>
+                            <button type="submit" class="btn-submit" style="margin-top: 16px; width: 100%;">Simpan Perbaikan</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="split-right" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Daftar Perbaikan</h3>
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Lab</th>
+                                        <th>Mulai</th>
+                                        <th>Selesai</th>
+                                        <th>Keterangan</th>
+                                        <th style="width: 100px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-maint-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+window.onerror = function(message, source, lineno, colno, error) {
+    alert("JS ERROR: " + message + " di baris " + lineno);
+};
+(function() {
+    // ===== Clock Picker State =====
+    let cpTargetInput = null;
+    let cpMode = 'hour'; // 'hour' or 'minute'
+    let cpHour = 12;
+    let cpMinute = 0;
+    let cpOverlay = null;
+
+    // ===== Build Clock Picker DOM =====
+    function buildClockPicker() {
+        if (document.getElementById('clock-picker-overlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'clock-picker-overlay';
+        overlay.className = 'clock-picker-overlay';
+        overlay.innerHTML = `
+            <div class="clock-picker" onclick="event.stopPropagation()">
+                <div class="clock-picker-header">
+                    <div class="cp-label">Pilih Waktu</div>
+                    <div class="cp-time-display">
+                        <button class="cp-hour-btn cp-active-unit" id="cp-hour-btn" onclick="window._cpSwitchMode('hour')">12</button>
+                        <span class="cp-colon">:</span>
+                        <button class="cp-minute-btn" id="cp-minute-btn" onclick="window._cpSwitchMode('minute')">00</button>
+                    </div>
+                </div>
+                <div class="clock-picker-body">
+                    <div class="clock-picker-mode-tabs">
+                        <button class="cp-mode-tab active" id="cp-tab-hour" onclick="window._cpSwitchMode('hour')">Jam</button>
+                        <button class="cp-mode-tab" id="cp-tab-minute" onclick="window._cpSwitchMode('minute')">Menit</button>
+                    </div>
+                    <div class="clock-face" id="cp-clock-face">
+                        <div class="clock-center"></div>
+                        <div class="clock-hand" id="cp-clock-hand"></div>
+                    </div>
+                </div>
+                <div class="clock-picker-footer">
+                    <button class="cp-btn-cancel" onclick="window._cpClose()">Batal</button>
+                    <button class="cp-btn-ok" onclick="window._cpConfirm()">OK</button>
+                </div>
+            </div>
+        `;
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) window._cpClose();
+        });
+        document.body.appendChild(overlay);
+        cpOverlay = overlay;
+
+        // Attach drag events to clock face
+        const face = document.getElementById('cp-clock-face');
+        let isDragging = false;
+
+        function handleClockInteraction(e) {
+            const rect = face.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            let clientX, clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const dx = clientX - centerX;
+            const dy = clientY - centerY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+            if (angleDeg < 0) angleDeg += 360;
+            
+            let changed = false;
+            let targetLength = 96;
+
+            if (cpMode === 'hour') {
+                let h = Math.round(angleDeg / 30);
+                if (h === 0) h = 12;
+                if (h === 12 && angleDeg > 345) h = 12; // Wrap around
+                
+                if (distance < 78) { // Inner ring
+                    if (h === 12) h = 0;
+                    else h += 12;
+                    targetLength = 62;
+                }
+                
+                if (cpHour !== h) {
+                    cpHour = h;
+                    document.getElementById('cp-hour-btn').innerText = String(h).padStart(2, '0');
+                    changed = true;
+                }
+            } else {
+                let m = Math.round(angleDeg / 6);
+                if (m === 60) m = 0;
+                
+                if (cpMinute !== m) {
+                    cpMinute = m;
+                    document.getElementById('cp-minute-btn').innerText = String(m).padStart(2, '0');
+                    changed = true;
+                }
+            }
+            if (changed) {
+                renderClockNumbers();
+            }
+            updateHand(angleDeg, targetLength);
+        }
+
+        face.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            handleClockInteraction(e);
+        });
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) handleClockInteraction(e);
+        });
+        document.addEventListener('mouseup', function(e) {
+            if (isDragging) {
+                isDragging = false;
+                updateHand();
+                if (cpMode === 'hour') {
+                    setTimeout(function() { window._cpSwitchMode('minute'); }, 300);
+                }
+            }
+        });
+        
+        face.addEventListener('touchstart', function(e) {
+            isDragging = true;
+            handleClockInteraction(e);
+            e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchmove', function(e) {
+            if (isDragging) {
+                handleClockInteraction(e);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        document.addEventListener('touchend', function(e) {
+            if (isDragging) {
+                isDragging = false;
+                updateHand();
+                if (cpMode === 'hour') {
+                    setTimeout(function() { window._cpSwitchMode('minute'); }, 300);
+                }
+            }
+        });
+    }
+
+    // ===== Render Clock Numbers =====
+    function renderClockNumbers() {
+        const face = document.getElementById('cp-clock-face');
+        if (!face) return;
+
+        // Remove old numbers and dots
+        face.querySelectorAll('.clock-number').forEach(n => n.remove());
+        face.querySelectorAll('.clock-dot').forEach(d => d.remove());
+
+        const radius = 96; // distance from center for numbers
+        const centerX = 120; // half of 240px
+        const centerY = 120;
+
+        if (cpMode === 'hour') {
+            // 24-hour: show 0-23, inner ring for 0,13-23, outer ring for 1-12
+            for (let h = 1; h <= 12; h++) {
+                const angle = (h * 30 - 90) * (Math.PI / 180);
+                const x = centerX + radius * Math.cos(angle) - 18;
+                const y = centerY + radius * Math.sin(angle) - 18;
+                const num = document.createElement('div');
+                num.className = 'clock-number' + (cpHour === h ? ' selected' : '');
+                num.innerText = h;
+                num.style.left = x + 'px';
+                num.style.top = y + 'px';
+                face.appendChild(num);
+            }
+            // Inner ring for 0, 13-23
+            const innerRadius = 62;
+            const innerHours = [0, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+            for (let i = 0; i < 12; i++) {
+                const h = innerHours[i];
+                const displayH = h === 0 ? '00' : String(h);
+                const angle = ((i === 0 ? 12 : i) * 30 - 90) * (Math.PI / 180);
+                // For 0: position at 12 o'clock (top)
+                let actualAngle;
+                if (h === 0) {
+                    actualAngle = (0 * 30 - 90) * (Math.PI / 180); // 12 o'clock
+                } else {
+                    actualAngle = ((h - 12) * 30 - 90) * (Math.PI / 180);
+                }
+                const x = centerX + innerRadius * Math.cos(actualAngle) - 18;
+                const y = centerY + innerRadius * Math.sin(actualAngle) - 18;
+                const num = document.createElement('div');
+                num.className = 'clock-number' + (cpHour === h ? ' selected' : '');
+                num.innerText = displayH;
+                num.style.left = x + 'px';
+                num.style.top = y + 'px';
+                num.style.fontSize = '12px';
+                num.style.width = '30px';
+                num.style.height = '30px';
+                num.style.height = '30px';
+                num.style.color = '#888';
+                if (cpHour === h) { num.style.color = '#fff'; }
+                face.appendChild(num);
+            }
+        } else {
+            // Minutes: show 00, 05, 10, 15, ..., 55
+            for (let i = 0; i < 12; i++) {
+                const m = i * 5;
+                const angle = (i * 30 - 90) * (Math.PI / 180);
+                const x = centerX + radius * Math.cos(angle) - 18;
+                const y = centerY + radius * Math.sin(angle) - 18;
+                const num = document.createElement('div');
+                // Only highlight if exact match, otherwise if it's close we don't highlight the background number
+                num.className = 'clock-number' + (cpMinute === m ? ' selected' : '');
+                num.innerText = String(m).padStart(2, '0');
+                num.style.left = x + 'px';
+                num.style.top = y + 'px';
+                face.appendChild(num);
+            }
+            
+            // If the current minute is not a multiple of 5, create a small dot for the exact minute
+            if (cpMinute % 5 !== 0) {
+                const angle = (cpMinute * 6 - 90) * (Math.PI / 180);
+                const x = centerX + radius * Math.cos(angle) - 4;
+                const y = centerY + radius * Math.sin(angle) - 4;
+                const dot = document.createElement('div');
+                dot.className = 'clock-dot';
+                dot.style.position = 'absolute';
+                dot.style.width = '8px';
+                dot.style.height = '8px';
+                dot.style.borderRadius = '50%';
+                dot.style.background = '#1B8A7A';
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                dot.style.zIndex = '7';
+                face.appendChild(dot);
+            }
+        }
+
+        updateHand();
+    }
+
+    // ===== Update Clock Hand =====
+    function updateHand(rawAngle = null, rawLength = null) {
+        const hand = document.getElementById('cp-clock-hand');
+        if (!hand) return;
+
+        let angleDeg;
+        let handLength;
+
+        if (rawAngle !== null && rawLength !== null) {
+            angleDeg = rawAngle;
+            handLength = rawLength;
+        } else {
+            if (cpMode === 'hour') {
+                if (cpHour >= 13 || cpHour === 0) {
+                    // Inner ring
+                    const h = cpHour === 0 ? 0 : cpHour - 12;
+                    angleDeg = h * 30;
+                    handLength = 62;
+                } else {
+                    angleDeg = cpHour * 30;
+                    handLength = 96;
+                }
+            } else {
+                angleDeg = cpMinute * 6;
+                handLength = 96;
+            }
+        }
+
+        hand.style.height = handLength + 'px';
+        hand.style.transform = 'translateX(-50%) rotate(' + angleDeg + 'deg)';
+    }
+
+    // Old selectHour and selectMinute functions removed since interaction is handled by drag now.
+
+    // ===== Switch Mode =====
+    window._cpSwitchMode = function(mode) {
+        cpMode = mode;
+        const hourBtn = document.getElementById('cp-hour-btn');
+        const minuteBtn = document.getElementById('cp-minute-btn');
+        const tabHour = document.getElementById('cp-tab-hour');
+        const tabMinute = document.getElementById('cp-tab-minute');
+
+        if (mode === 'hour') {
+            hourBtn.classList.add('cp-active-unit');
+            minuteBtn.classList.remove('cp-active-unit');
+            tabHour.classList.add('active');
+            tabMinute.classList.remove('active');
+        } else {
+            hourBtn.classList.remove('cp-active-unit');
+            minuteBtn.classList.add('cp-active-unit');
+            tabHour.classList.remove('active');
+            tabMinute.classList.add('active');
+        }
+        renderClockNumbers();
+    };
+
+    // ===== Open Clock Picker =====
+    window._cpOpen = function(inputEl) {
+        buildClockPicker();
+        cpTargetInput = inputEl;
+        cpMode = 'hour';
+
+        // Parse existing value
+        const val = inputEl.value;
+        if (val && val.includes(':')) {
+            const parts = val.split(':');
+            cpHour = parseInt(parts[0]) || 0;
+            cpMinute = parseInt(parts[1]) || 0;
+        } else {
+            cpHour = 8;
+            cpMinute = 0;
+        }
+
+        document.getElementById('cp-hour-btn').innerText = String(cpHour).padStart(2, '0');
+        document.getElementById('cp-minute-btn').innerText = String(cpMinute).padStart(2, '0');
+
+        const hourBtn = document.getElementById('cp-hour-btn');
+        const minuteBtn = document.getElementById('cp-minute-btn');
+        hourBtn.classList.add('cp-active-unit');
+        minuteBtn.classList.remove('cp-active-unit');
+        document.getElementById('cp-tab-hour').classList.add('active');
+        document.getElementById('cp-tab-minute').classList.remove('active');
+
+        cpOverlay.classList.add('active');
+        renderClockNumbers();
+    };
+
+    // ===== Close =====
+    window._cpClose = function() {
+        if (cpOverlay) cpOverlay.classList.remove('active');
+        cpTargetInput = null;
+    };
+
+    // ===== Confirm =====
+    window._cpConfirm = function() {
+        if (cpTargetInput) {
+            cpTargetInput.value = String(cpHour).padStart(2, '0') + ':' + String(cpMinute).padStart(2, '0');
+            // Trigger input event so any listeners pick up the change
+            cpTargetInput.dispatchEvent(new Event('input', { bubbles: true }));
+            cpTargetInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        window._cpClose();
+    };
+
+    // ===== Attach to time inputs =====
+    document.addEventListener('DOMContentLoaded', function() {
+        const timeInputIds = ['book-start', 'book-end', 'edit-book-start', 'edit-book-end'];
+        timeInputIds.forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.readOnly = true;
+                el.style.cursor = 'pointer';
+                el.placeholder = 'Klik untuk pilih jam';
+                el.addEventListener('click', function() { window._cpOpen(el); });
+            }
+        });
+    });
+})();
+
+
+
+    function openEditUserModal(id, username, is_admin) {
+        document.getElementById('edit-user-id').value = id;
+        document.getElementById('edit-user-username').value = username;
+        document.getElementById('edit-user-password').value = '';
+        document.getElementById('edit-user-is-admin').checked = is_admin ? true : false;
+        document.getElementById('modal-edit-user').style.display = 'flex';
+    }
+
+    async function submitEditUser(e) {
+        e.preventDefault();
+        const id = document.getElementById('edit-user-id').value;
+        const username = document.getElementById('edit-user-username').value;
+        const password = document.getElementById('edit-user-password').value;
+        const is_admin = document.getElementById('edit-user-is-admin').checked;
+        
+        try {
+            const res = await fetch(`/api/users/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, password, is_admin})
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showToast(data.message);
+                document.getElementById('modal-edit-user').style.display = 'none';
+                loadUsers();
+            loadMaintenance();
+            } else {
+                showToast(data.message, true);
+            }
+        } catch (err) {
+            showToast('Gagal mengubah pengguna', true);
+        }
+    }
+
+</script>
+
+
+
+    <!-- Edit User Modal -->
+    <div id="modal-edit-user" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-edit-user').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Edit Pengguna</h2>
+            </div>
+            <form id="form-edit-user" onsubmit="submitEditUser(event)">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="edit-user-username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password Baru (Kosongkan jika tidak ingin mengubah)</label>
+                    <input type="password" id="edit-user-password" placeholder="Masukkan password baru">
+                </div>
+                <div class="form-group" style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="edit-user-is-admin" style="width: 16px; height: 16px;">
+                    <label for="edit-user-is-admin" style="margin: 0; font-size: 14px;">Beri Akses Admin</label>
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; justify-content:center; margin-top: 16px;">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+
+        <!-- TAB: MAINTENANCE -->
+        <div id="maintenance" class="tab-content" style="display: none;">
+            <div class="header-section">
+                <h1>Perbaikan Lab</h1>
+                <p>Manajemen jadwal perbaikan laboratorium</p>
+            </div>
+            
+            <div class="split-container" style="margin-top: 24px;">
+                <div class="split-left" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Tambah Perbaikan</h3>
+                        <form id="form-add-maintenance" onsubmit="submitMaintenance(event)">
+                            <div class="form-group">
+                                <label>Pilih Lab</label>
+                                <select id="maint-lab" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Mulai</label>
+                                <input type="date" id="maint-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Selesai</label>
+                                <input type="date" id="maint-end" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Keterangan</label>
+                                <input type="text" id="maint-ket" placeholder="Contoh: AC rusak" required>
+                            </div>
+                            <button type="submit" class="btn-submit" style="margin-top: 16px; width: 100%;">Simpan Perbaikan</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="split-right" style="width: 100%;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Daftar Perbaikan</h3>
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Lab</th>
+                                        <th>Mulai</th>
+                                        <th>Selesai</th>
+                                        <th>Keterangan</th>
+                                        <th style="width: 100px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-maint-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+    <!-- SOP Upload Modal -->
+    <div id="modal-sop-upload" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="document.getElementById('modal-sop-upload').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Tambah SOP Baru</h2>
+            </div>
+            <form id="form-sop-upload" onsubmit="submitSopUpload(event)">
+                <div class="form-group">
+                    <label>Nama Prosedur / Tindakan</label>
+                    <input type="text" id="sop-title" required placeholder="Contoh: Pemasangan Infus">
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="sop-category" required>
+                        <option value="Prosedur Medis">Prosedur Medis</option>
+                        <option value="Penggunaan Alat">Penggunaan Alat</option>
+                        <option value="Keselamatan">Keselamatan</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>File SOP (PDF)</label>
+                    <input type="file" id="sop-file" accept="application/pdf" required>
+                </div>
+                <div style="margin-top:24px; display:flex; gap:12px; justify-content:flex-end;">
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('modal-sop-upload').style.display='none'">Batal</button>
+                    <button type="submit" class="btn-submit">Upload SOP</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Booking Modal -->
+    <div id="modal-add-booking" class="modal-overlay" onclick="closeModals(event)">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-height: 90vh; overflow-y: auto; max-width: 600px;">
+            <button class="modal-close" onclick="document.getElementById('modal-add-booking').style.display='none'">&times;</button>
+            <div class="modal-header">
+                <h2>Form Peminjaman Lab</h2>
+            </div>
+            
+            <div style="padding: 24px;">
+                <form id="form-booking" onsubmit="submitBooking(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="book-lab">Pilih Laboratorium</label>
+                            <select id="book-lab" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-tanggal">Hari / Tanggal</label>
+                            <input type="date" id="book-tanggal" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-start">Jam Mulai (Operasional 07:30 - 22:00)</label>
+                            <input type="text" id="book-start" max="22:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-end">Jam Selesai (Operasional 07:30 - 22:00)</label>
+                            <input type="text" id="book-end" max="22:00" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="book-kelas">Tingkat / Kelas yang Meminjam</label>
+                            <input type="text" id="book-kelas" placeholder="Contoh: Tingkat 2A" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="book-prodi">Program Studi</label>
+                            <select id="book-prodi" required>
+                                <option value="D3 Keperawatan">D3 Keperawatan</option>
+                                <option value="S1 Keperawatan">S1 Keperawatan</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="book-tujuan">Tujuan Kegiatan / Detail Praktikum</label>
+                            <input type="text" id="book-tujuan"
+                                placeholder="Contoh: Ujian OSCE Pemasangan Infus Mandiri" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="margin-top: 24px;">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        Konfirmasi Peminjaman
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.APP_CONFIG = {
+            username: "{{ username }}",
+            isAdmin: "{{ 'true' if is_admin else 'false' }}" === "true"
+        };
+        window.currentUserIsAdmin = window.APP_CONFIG.isAdmin;
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+
+</html>
