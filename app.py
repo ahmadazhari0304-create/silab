@@ -25,8 +25,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-supabase_url = os.getenv("SUPABASE_URL")
-supabase_key = os.getenv("SUPABASE_KEY")
+supabase_url = os.getenv("SUPABASE_URL", "https://hxsmcgsmsprguzbuiphy.supabase.co")
+supabase_key = os.getenv("SUPABASE_KEY", "sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn")
 supabase: Client = create_client(supabase_url, supabase_key)
 
 class User(UserMixin):
