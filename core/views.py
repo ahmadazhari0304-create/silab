@@ -272,7 +272,8 @@ def handle_bookings(request):
                 'prodi': b.prodi,
                 'tujuan': b.tujuan,
                 'status': b.status,
-                'users': {'username': b.user.username} if b.user else None
+                'users': {'username': b.user.username} if b.user else None,
+                'peminjam': b.user.username if b.user else 'Peminjam'
             })
         return JsonResponse(result, safe=False)
         

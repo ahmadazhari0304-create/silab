@@ -585,20 +585,43 @@
         </div> <!-- End of split-container -->
     </div> <!-- End of pinjam-tab-form -->
 
-                <!-- Riwayat Peminjaman Tab -->
+                <!-- Kelola Pinjaman Tab -->
                 <div id="pinjam-tab-riwayat" style="display: none;">
-            <!-- Riwayat Peminjaman (Full Width) -->
             <div class="card-form" style="max-width: 100%;">
-                <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Daftar Pinjaman Lab</h3>
-                <div class="table-container" style="max-height: 480px; overflow-y: auto;">
-                    <table>
+                
+                <!-- Header with title, filter, and search -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <h3 style="font-weight: 700; color: var(--text-dark); margin: 0;">Daftar Pinjaman Lab</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0;">Kelola semua peminjaman laboratorium</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <select id="filter-booking-status" onchange="filterBookingTable()" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 500; background: #fff; color: var(--text-main); cursor: pointer;">
+                            <option value="all">Semua Status</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="approved">Disetujui</option>
+                            <option value="rejected">Ditolak</option>
+                        </select>
+                        <div style="position: relative;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="width: 16px; height: 16px; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="search-booking" placeholder="Cari lab, kelas, prodi..." oninput="filterBookingTable()" style="padding: 8px 12px 8px 32px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; width: 200px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary badges -->
+                <div id="booking-summary-badges" style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;"></div>
+
+                <div class="table-container" style="max-height: 520px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <table style="border-collapse: collapse; width: 100%;">
                         <thead>
-                            <tr>
-                                <th>Laboratorium</th>
-                                <th>Tanggal</th>
-                                <th>Durasi</th>
-                                <th>Status</th>
-                                <th style="width: 140px; text-align: center;">Aksi</th>
+                            <tr style="background: #f1f5f9;">
+                                <th style="padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700;">Laboratorium</th>
+                                <th style="padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700;">Tanggal</th>
+                                <th style="padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700;">Waktu</th>
+                                <th style="padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700;">Kelas / Prodi</th>
+                                <th style="padding: 12px 16px; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700;">Status</th>
+                                <th style="padding: 12px 16px; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700; min-width: 200px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="table-bookings-body">
@@ -606,7 +629,14 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Empty state -->
+                <div id="booking-empty-state" style="display: none; text-align: center; padding: 48px 24px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="width: 48px; height: 48px; margin: 0 auto 12px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <p style="font-weight: 600; color: #94a3b8; font-size: 14px;">Belum ada data peminjaman</p>
                 </div>
+                
+            </div>
             </div>
             
             </div>

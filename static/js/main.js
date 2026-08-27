@@ -522,11 +522,49 @@
             renderCalendar();
         }
         
+        // Update summary badges
+        const badgesContainer = document.getElementById('booking-summary-badges');
+        if (badgesContainer) {
+            const totalPending = bookings.filter(b => b.status === 'pending').length;
+            const totalApproved = bookings.filter(b => b.status === 'approved').length;
+            const totalRejected = bookings.filter(b => b.status === 'rejected').length;
+            badgesContainer.innerHTML = `
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; font-size:12px; font-weight:600; color:#16a34a;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#16a34a;"></span> Disetujui: ${totalApproved}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#fffbeb; border:1px solid #fde68a; border-radius:20px; font-size:12px; font-weight:600; color:#d97706;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#d97706;"></span> Menunggu: ${totalPending}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:20px; font-size:12px; font-weight:600; color:#dc2626;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></span> Ditolak: ${totalRejected}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:600; color:#64748b;">
+                    Total: ${bookings.length}
+                </div>
+            `;
+        }
+
+        renderBookingTable(bookings);
+    }
+
+    function renderBookingTable(bookings) {
         const tbody = document.getElementById('table-bookings-body');
+        const emptyState = document.getElementById('booking-empty-state');
         tbody.innerHTML = '';
+        
+        if (bookings.length === 0) {
+            if (emptyState) emptyState.style.display = 'block';
+            return;
+        }
+        if (emptyState) emptyState.style.display = 'none';
         
         bookings.forEach((b, index) => {
             const tr = document.createElement('tr');
+            tr.setAttribute('data-status', b.status);
+            tr.setAttribute('data-search', `${b.nama_lab} ${b.kelas || ''} ${b.prodi || ''} ${b.tujuan || ''} ${b.peminjam || ''}`.toLowerCase());
+            tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; transition: background 0.15s;';
+            tr.onmouseenter = () => tr.style.background = '#f8fafc';
+            tr.onmouseleave = () => tr.style.background = '';
             
             let actionBtn = '';
             
@@ -535,54 +573,98 @@
                 
                 if (b.status === 'pending') {
                     actionBtn += `
-                        <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'approved')" style="color:#1B8A7A; background: rgba(27,138,122,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Setujui</button>
-                        <button class="btn-table" onclick="updateBookingStatus(${b.id}, 'rejected')" style="color:#C53030; background: rgba(197,48,48,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Tolak</button>
+                        <button onclick="updateBookingStatus(${b.id}, 'approved')" style="display:inline-flex;align-items:center;gap:4px;color:#16a34a; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" onmouseenter="this.style.background='#dcfce7'" onmouseleave="this.style.background='#f0fdf4'">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Setujui
+                        </button>
+                        <button onclick="updateBookingStatus(${b.id}, 'rejected')" style="display:inline-flex;align-items:center;gap:4px;color:#dc2626; background:#fef2f2; border:1px solid #fecaca; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" onmouseenter="this.style.background='#fee2e2'" onmouseleave="this.style.background='#fef2f2'">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Tolak
+                        </button>
                     `;
                 }
                 
-                // Edit and Delete buttons for Admin
                 actionBtn += `
-                    <button class="btn-table" onclick="editBooking(${b.id})" style="color:var(--primary); background: rgba(33, 150, 243, 0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Edit</button>
-                    <button class="btn-table" onclick="deleteBooking(${b.id})" style="color:#d9534f; background: rgba(217,83,79,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Hapus</button>
+                    <button onclick="editBooking(${b.id})" style="display:inline-flex;align-items:center;gap:4px;color:#3b82f6; background:#eff6ff; border:1px solid #bfdbfe; padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" onmouseenter="this.style.background='#dbeafe'" onmouseleave="this.style.background='#eff6ff'">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Edit
+                    </button>
+                    <button onclick="deleteBooking(${b.id})" style="display:inline-flex;align-items:center;gap:4px;color:#ef4444; background:#fef2f2; border:1px solid #fecaca; padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" onmouseenter="this.style.background='#fee2e2'" onmouseleave="this.style.background='#fef2f2'">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Hapus
+                    </button>
                 </div>`;
             } else {
                 if (b.status === 'pending') {
                     actionBtn = `
-                        <button class="btn-table" onclick="deleteBooking(${b.id})" style="color:#C53030; background: rgba(197,48,48,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;" title="Batalkan Peminjaman">Batalkan</button>
+                        <button onclick="deleteBooking(${b.id})" style="display:inline-flex;align-items:center;gap:4px;color:#ef4444; background:#fef2f2; border:1px solid #fecaca; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" title="Batalkan Peminjaman">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Batalkan
+                        </button>
                     `;
                 } else {
-                    actionBtn = `<span style="font-size:12px; color:var(--text-muted);">-</span>`;
+                    actionBtn = `<span style="font-size:12px; color:#cbd5e1;">-</span>`;
                 }
             }
             
             let statusBadge = '';
             if (b.status === 'pending') {
-                statusBadge = `<span style="background:#FEFCBF; color:#B7791F; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">Menunggu</span>`;
+                statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#fffbeb; color:#d97706; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #fde68a;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Menunggu</span>`;
             } else if (b.status === 'approved') {
-                statusBadge = `<span style="background:#C6F6D5; color:#22543D; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">Disetujui</span>`;
+                statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4; color:#16a34a; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #bbf7d0;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>Disetujui</span>`;
             } else {
-                statusBadge = `<span style="background:#FED7D7; color:#822727; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">Ditolak</span>`;
+                statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#fef2f2; color:#dc2626; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #fecaca;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#dc2626;"></span>Ditolak</span>`;
             }
             
-            let peminjamHtml = window.currentUserIsAdmin ? `<div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Oleh: ${b.peminjam || 'Anda'}</div>` : '';
+            let peminjamHtml = window.currentUserIsAdmin ? `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">Oleh: ${b.peminjam || 'Anda'}</div>` : '';
+
+            // Format tanggal lebih friendly
+            const tglParts = b.tanggal.split('-');
+            const bulanNama = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            const tglFormatted = `${parseInt(tglParts[2])} ${bulanNama[parseInt(tglParts[1])-1]} ${tglParts[0]}`;
 
             tr.innerHTML = `
-                <td><div style="font-weight:600; color:var(--text-main);">${b.nama_lab}</div>${peminjamHtml}</td>
-                <td><div style="font-weight:500;">${b.tanggal}</div></td>
-                <td>
-                    <div style="display:inline-flex; align-items:center; gap:6px; background:#F7FAFC; padding:4px 8px; border-radius:6px; font-size:13px; font-weight:500; color:var(--text-main);">
-                        <span>${b.start_time}</span>
-                        <span style="color:var(--text-muted);">-</span>
-                        <span>${b.end_time}</span>
+                <td style="padding:14px 16px;">
+                    <div style="font-weight:700; color:#1e293b; font-size:14px;">${b.nama_lab}</div>
+                    ${peminjamHtml}
+                </td>
+                <td style="padding:14px 16px;">
+                    <div style="font-weight:600; font-size:13px; color:#334155;">${tglFormatted}</div>
+                </td>
+                <td style="padding:14px 16px;">
+                    <div style="display:inline-flex; align-items:center; gap:4px; background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; color:#475569;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${b.start_time} - ${b.end_time}
                     </div>
                 </td>
-                <td>${statusBadge}</td>
-                <td style="text-align: center;">
+                <td style="padding:14px 16px;">
+                    <div style="font-weight:600; font-size:13px; color:#334155;">${b.kelas || '-'}</div>
+                    <div style="font-size:11px; color:#94a3b8; margin-top:1px;">${b.prodi || '-'}</div>
+                </td>
+                <td style="padding:14px 16px; text-align:center;">${statusBadge}</td>
+                <td style="padding:14px 16px; text-align:center;">
                     ${actionBtn}
                 </td>
             `;
             tbody.appendChild(tr);
         });
+    }
+
+    function filterBookingTable() {
+        const statusFilter = document.getElementById('filter-booking-status')?.value || 'all';
+        const searchText = (document.getElementById('search-booking')?.value || '').toLowerCase();
+        
+        const filtered = currentBookings.filter(b => {
+            const matchStatus = statusFilter === 'all' || b.status === statusFilter;
+            const searchStr = `${b.nama_lab} ${b.kelas || ''} ${b.prodi || ''} ${b.tujuan || ''} ${b.peminjam || ''}`.toLowerCase();
+            const matchSearch = !searchText || searchStr.includes(searchText);
+            return matchStatus && matchSearch;
+        });
+        
+        renderBookingTable(filtered);
     }
 
 
