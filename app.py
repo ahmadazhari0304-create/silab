@@ -9,22 +9,14 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from dotenv import load_dotenv
 from functools import wraps
 
-from flask_compress import Compress
-from supabase import create_client, Client
-
-load_dotenv()
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
 app = Flask(
     __name__,
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['COMPRESS_ALGORITHM'] = ['gzip', 'deflate']
 app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')
-
-Compress(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
