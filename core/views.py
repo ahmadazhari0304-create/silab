@@ -500,16 +500,42 @@ def handle_user_detail(request, user_id):
 
 @login_required
 @csrf_exempt
-@require_http_methods(["DELETE"])
-def delete_booking(request, id):
+@require_http_methods(["DELETE", "PUT"])
+def handle_booking_detail(request, id):
     try:
         booking = Bookings.objects.get(id=id)
-        # Boleh hapus jika admin ATAU jika dia yang membuat booking & status masih pending
-        if request.session.get('is_admin') or (booking.user_id == request.session.get('user_id') and booking.status == 'pending'):
-            booking.delete()
-            return JsonResponse({"status": "success", "message": "Peminjaman berhasil dihapus!"})
-        else:
-            return JsonResponse({"status": "error", "message": "Akses ditolak atau status sudah tidak pending!"}, status=403)
+        if request.method == 'DELETE':
+            # Boleh hapus jika admin ATAU jika dia yang membuat booking & status masih pending
+            if request.session.get('is_admin') or (booking.user_id == request.session.get('user_id') and booking.status == 'pending'):
+                booking.delete()
+                return JsonResponse({"status": "success", "message": "Peminjaman berhasil dihapus!"})
+            else:
+                return JsonResponse({"status": "error", "message": "Akses ditolak atau status sudah tidak pending!"}, status=403)
+        
+        elif request.method == 'PUT':
+            # Boleh edit jika admin ATAU (dia yang membuat & masih pending)
+            if request.session.get('is_admin') or (booking.user_id == request.session.get('user_id') and booking.status == 'pending'):
+                data = json.loads(request.body)
+                
+                # Check required fields
+                required_fields = ['nama_lab', 'tanggal', 'start_time', 'end_time']
+                if not all(data.get(field) for field in required_fields):
+                    return JsonResponse({"status": "error", "message": "Semua field wajib diisi!"}, status=400)
+                
+                booking.nama_lab = data['nama_lab']
+                booking.tanggal = data['tanggal']
+                booking.start_time = data['start_time']
+                booking.end_time = data['end_time']
+                booking.tujuan = data.get('tujuan', booking.tujuan)
+                # Keep prodi and kelas if provided, otherwise keep existing
+                booking.prodi = data.get('prodi', booking.prodi)
+                booking.kelas = data.get('kelas', booking.kelas)
+                
+                booking.save()
+                return JsonResponse({"status": "success", "message": "Peminjaman berhasil diupdate!"})
+            else:
+                return JsonResponse({"status": "error", "message": "Akses ditolak atau status sudah tidak pending!"}, status=403)
+                
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
