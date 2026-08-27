@@ -1,3 +1,4 @@
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -131,7 +132,7 @@
         {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('register') }}" method="POST">
+        <form action="{% url 'register' %}" method="POST">
             <div class="form-group">
                 <label>Username</label>
                 <input type="text" name="username" required placeholder="Pilih username">
@@ -144,9 +145,10 @@
         </form>
 
         <div class="auth-links">
-            Sudah punya akun? <a href="{{ url_for('login') }}">Log In di sini</a>
+            Sudah punya akun? <a href="{% url 'login' %}">Log In di sini</a>
         </div>
     </div>
 </body>
 
 </html>
+
