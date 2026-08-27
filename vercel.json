@@ -1,25 +1,14 @@
 {
   "builds": [
     {
-      "src": "silab/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles"
-      }
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "silab/wsgi.py"
+      "dest": "api/index.py"
     }
   ]
 }
