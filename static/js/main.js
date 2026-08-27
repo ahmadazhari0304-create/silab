@@ -1017,7 +1017,7 @@
                         <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:#f8fafc; border-radius:12px; border-left: 4px solid #1B8A7A;">
                             <div style="flex:1;">
                                 <div style="font-size:14px; font-weight:700; color:#1e293b;">${b.nama_lab}</div>
-                                <div style="font-size:12px; color:#64748b; margin-top:2px;">${b.start_time} â€“ ${b.end_time} &middot; ${b.kelas || ''}</div>
+                                <div style="font-size:12px; color:#64748b; margin-top:2px;">${b.start_time} - ${b.end_time} &middot; ${b.kelas || ''}</div>
                             </div>
                             <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:rgba(27,138,122,0.12); color:#1B8A7A;">Aktif</span>
                         </div>`;
