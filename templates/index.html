@@ -1089,17 +1089,19 @@ window.onerror = function(message, source, lineno, colno, error) {
             if (angleDeg < 0) angleDeg += 360;
             
             let changed = false;
-            let targetLength = 96;
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
+            let faceWidth = isMobile ? 200 : 240;
+            let targetLength = faceWidth * 0.4;
 
             if (cpMode === 'hour') {
                 let h = Math.round(angleDeg / 30);
                 if (h === 0) h = 12;
                 if (h === 12 && angleDeg > 345) h = 12; // Wrap around
                 
-                if (distance < 78) { // Inner ring
+                if (distance < faceWidth * 0.325) { // Inner ring
                     if (h === 12) h = 0;
                     else h += 12;
-                    targetLength = 62;
+                    targetLength = faceWidth * 0.258;
                 }
                 
                 if (cpHour !== h) {
@@ -1171,9 +1173,12 @@ window.onerror = function(message, source, lineno, colno, error) {
         face.querySelectorAll('.clock-number').forEach(n => n.remove());
         face.querySelectorAll('.clock-dot').forEach(d => d.remove());
 
-        const radius = 96; // distance from center for numbers
-        const centerX = 120; // half of 240px
-        const centerY = 120;
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        let faceWidth = isMobile ? 200 : 240;
+
+        const radius = faceWidth * 0.4; // distance from center for numbers
+        const centerX = faceWidth / 2;
+        const centerY = faceWidth / 2;
 
         if (cpMode === 'hour') {
             // 24-hour: show 0-23, inner ring for 0,13-23, outer ring for 1-12
@@ -1189,7 +1194,7 @@ window.onerror = function(message, source, lineno, colno, error) {
                 face.appendChild(num);
             }
             // Inner ring for 0, 13-23
-            const innerRadius = 62;
+            const innerRadius = faceWidth * 0.258;
             const innerHours = [0, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
             for (let i = 0; i < 12; i++) {
                 const h = innerHours[i];
@@ -1258,7 +1263,11 @@ window.onerror = function(message, source, lineno, colno, error) {
     // ===== Update Clock Hand =====
     function updateHand(rawAngle = null, rawLength = null) {
         const hand = document.getElementById('cp-clock-hand');
-        if (!hand) return;
+        const face = document.getElementById('cp-clock-face');
+        if (!hand || !face) return;
+        
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        let faceWidth = isMobile ? 200 : 240;
 
         let angleDeg;
         let handLength;
@@ -1272,14 +1281,14 @@ window.onerror = function(message, source, lineno, colno, error) {
                     // Inner ring
                     const h = cpHour === 0 ? 0 : cpHour - 12;
                     angleDeg = h * 30;
-                    handLength = 62;
+                    handLength = faceWidth * 0.258;
                 } else {
                     angleDeg = cpHour * 30;
-                    handLength = 96;
+                    handLength = faceWidth * 0.4;
                 }
             } else {
                 angleDeg = cpMinute * 6;
-                handLength = 96;
+                handLength = faceWidth * 0.4;
             }
         }
 
