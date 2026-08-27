@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -19,6 +19,15 @@
 </head>
 
 <body>
+
+    <!-- Full Page Loader -->
+    <div id="page-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
+        <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="margin-top: 16px; font-weight: 600; color: var(--primary);">Memuat Data...</div>
+    </div>
+    <style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
@@ -218,7 +227,7 @@
                         <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     </div>
                     <div>
-                        <h1 class="greeting-title">Halo, {{ username }}! ðŸ‘‹</h1>
+                        <h1 class="greeting-title">Halo, {{ username }}! 👋</h1>
                         <p class="greeting-sub">Selamat datang - <span id="current-date">Hari ini</span></p>
                     </div>
                 </div>

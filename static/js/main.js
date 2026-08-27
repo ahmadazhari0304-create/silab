@@ -148,12 +148,29 @@
         }
 
         switchTab('home');
-        loadLabs();
-        loadItems();
-        loadBookings();
-        loadBHP();
-        loadSOP();
-        updateDashboard();
+
+        async function initializeData() {
+            try {
+                await Promise.all([
+                    loadLabs(),
+                    loadItems(),
+                    loadBookings(),
+                    loadBHP(),
+                    loadSOP()
+                ]);
+            } catch (e) {
+                console.error("Error loading initial data:", e);
+            } finally {
+                updateDashboard();
+                const loader = document.getElementById('page-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }
+        }
+        
+        initializeData();
 
         // Init timepicker if available
         if (typeof mdtimepicker !== 'undefined') {
