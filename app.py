@@ -8,7 +8,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
 from functools import wraps
-from supabase import create_client, Client
+import urllib.request
+import urllib.parse
+import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
 app = Flask(
@@ -23,20 +25,88 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-class LazySupabase:
-    def __init__(self):
-        self._client = None
-    @property
-    def client(self):
-        if self._client is None:
-            url = os.getenv("SUPABASE_URL", "https://hxsmcgsmsprguzbuiphy.supabase.co")
-            key = os.getenv("SUPABASE_KEY", "sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn")
-            self._client = create_client(url, key)
-        return self._client
-    def __getattr__(self, name):
-        return getattr(self.client, name)
+class ResponseObject:
+    def __init__(self, data, count=0):
+        self.data = data if data is not None else []
+        self.count = count
 
-supabase = LazySupabase()
+class SupabaseClient:
+    def table(self, table_name):
+        return SupabaseQuery(table_name)
+
+class SupabaseQuery:
+    def __init__(self, table_name):
+        self.table_name = table_name
+        self.params = {}
+        self.headers = {'Prefer': 'return=representation'}
+        self.method = 'GET'
+        self.body = None
+
+    def select(self, columns='*', count=None):
+        self.params['select'] = columns
+        if count == 'exact':
+            self.headers['Prefer'] = 'count=exact'
+        return self
+
+    def eq(self, column, value):
+        self.params[column] = f'eq.{value}'
+        return self
+
+    def or_(self, condition):
+        self.params['or'] = f'({condition})'
+        return self
+
+    def order(self, column, desc=False):
+        direction = 'desc' if desc else 'asc'
+        self.params['order'] = f'{column}.{direction}'
+        return self
+
+    def insert(self, record):
+        self.method = 'POST'
+        self.body = record
+        return self
+
+    def update(self, record):
+        self.method = 'PATCH'
+        self.body = record
+        return self
+
+    def delete(self):
+        self.method = 'DELETE'
+        return self
+
+    def execute(self):
+        url = os.getenv('SUPABASE_URL', 'https://hxsmcgsmsprguzbuiphy.supabase.co').rstrip('/')
+        key = os.getenv('SUPABASE_KEY', 'sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn')
+        full_url = f'{url}/rest/v1/{self.table_name}'
+        if self.params:
+            full_url += '?' + urllib.parse.urlencode(self.params)
+
+        headers = {
+            'apikey': key,
+            'Authorization': f'Bearer {key}',
+            'Content-Type': 'application/json',
+            **self.headers
+        }
+
+        data_bytes = json.dumps(self.body).encode('utf-8') if self.body is not None else None
+        req = urllib.request.Request(full_url, data=data_bytes, headers=headers, method=self.method)
+        try:
+            with urllib.request.urlopen(req) as resp:
+                raw_res = resp.read().decode('utf-8')
+                data = json.loads(raw_res) if raw_res else []
+                count_hdr = resp.headers.get('Content-Range')
+                count = len(data) if isinstance(data, list) else 1
+                if count_hdr and '/' in count_hdr:
+                    total_str = count_hdr.split('/')[-1]
+                    if total_str.isdigit():
+                        count = int(total_str)
+                return ResponseObject(data, count)
+        except Exception as e:
+            print(f'Supabase REST Error ({self.method} {self.table_name}):', e)
+            return ResponseObject([], 0)
+
+supabase = SupabaseClient()
 
 class User(UserMixin):
     def __init__(self, id, username, is_admin):
