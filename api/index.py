@@ -1,7 +1,9 @@
-from flask import Flask
+from http.server import BaseHTTPRequestHandler
 
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Hello from Vercel Flask Serverless!"
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write('Hello from Vercel BaseHTTPRequestHandler!'.encode('utf-8'))
+        return
