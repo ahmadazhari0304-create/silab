@@ -472,30 +472,25 @@
 
     // Sub-tab toggler for Data SILAB
     function switchSilabTab(tab) {
-        const labTab = document.getElementById('silab-tab-lab');
-        const bhpTab = document.getElementById('silab-tab-bhp');
-        const labBtn = document.getElementById('tab-btn-lab');
-        const bhpBtn = document.getElementById('tab-btn-bhp');
-
-        if (tab === 'lab') {
-            labTab.style.display = 'block';
-            bhpTab.style.display = 'none';
-            labBtn.style.color = 'var(--primary)';
-            labBtn.style.borderBottom = '2px solid var(--primary)';
-            labBtn.style.fontWeight = '700';
-            bhpBtn.style.color = 'var(--text-muted)';
-            bhpBtn.style.borderBottom = '2px solid transparent';
-            bhpBtn.style.fontWeight = '600';
-        } else {
-            labTab.style.display = 'none';
-            bhpTab.style.display = 'block';
-            bhpBtn.style.color = 'var(--primary)';
-            bhpBtn.style.borderBottom = '2px solid var(--primary)';
-            bhpBtn.style.fontWeight = '700';
-            labBtn.style.color = 'var(--text-muted)';
-            labBtn.style.borderBottom = '2px solid transparent';
-            labBtn.style.fontWeight = '600';
-        }
+        const tabs = ['lab', 'bhp', 'kategori'];
+        tabs.forEach(t => {
+            const el = document.getElementById(`silab-tab-${t}`);
+            const btn = document.getElementById(`tab-btn-${t}`);
+            if (el && btn) {
+                if (t === tab) {
+                    el.style.display = 'block';
+                    btn.style.color = 'var(--primary)';
+                    btn.style.borderBottom = '2px solid var(--primary)';
+                    btn.style.fontWeight = '700';
+                    if (t === 'kategori') loadCategoriesList();
+                } else {
+                    el.style.display = 'none';
+                    btn.style.color = 'var(--text-muted)';
+                    btn.style.borderBottom = '2px solid transparent';
+                    btn.style.fontWeight = '600';
+                }
+            }
+        });
     }
 
     // =============================================

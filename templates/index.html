@@ -141,28 +141,7 @@
         </div>
     </div>
 
-    <!-- Category Manage Modal -->
-    <div class="modal" id="category-manage-modal">
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="modal-header">
-                <h3>Kelola Kategori SOP</h3>
-                <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-add-category" onsubmit="submitAddCategory(event)" style="display:flex; gap:10px; margin-bottom: 20px;">
-                    <input type="text" id="new-category-name" placeholder="Nama Kategori Baru" required style="flex:1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px;">
-                    <button type="submit" class="btn-submit" style="margin:0; padding: 10px 20px; white-space: nowrap;">Tambah</button>
-                </form>
-                <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tbody id="category-list-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Sidebar Menu -->
     
@@ -678,15 +657,10 @@
                     <div style="display: flex; gap: 16px;">
                         <button onclick="switchSilabTab('lab')" id="tab-btn-lab" style="background:none; border:none; padding:12px 16px; font-weight:700; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer; font-size:14px; transition:all 0.2s;">Data Laboratorium</button>
                         <button onclick="switchSilabTab('bhp')" id="tab-btn-bhp" style="background:none; border:none; padding:12px 16px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; font-size:14px; transition:all 0.2s;">Data Barang BHP</button>
+                        {% if is_admin %}
+                        <button onclick="switchSilabTab('kategori')" id="tab-btn-kategori" style="background:none; border:none; padding:12px 16px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; font-size:14px; transition:all 0.2s;">Data Kategori SOP</button>
+                        {% endif %}
                     </div>
-                    {% if is_admin %}
-                    <button class="btn-submit" onclick="openCategoryModal()" style="gap: 8px; margin: 0; margin-bottom: 8px; background: #6c757d; border-radius: 8px; padding: 8px 16px; font-size: 12px;">
-                        <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                        Kelola Kategori SOP
-                    </button>
-                    {% endif %}
                 </div>
 
                 <!-- Kelola Lab Tab -->
@@ -749,6 +723,29 @@
                                 </thead>
                                 <tbody id="table-item-body">
                                     <!-- Diisi via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="silab-tab-kategori" style="display: none;">
+                    <div class="card-form" style="width: 100%;">
+                        <h3 style="margin-bottom: 20px; font-weight: 700; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Kelola Kategori SOP</h3>
+                        <form id="form-add-category" onsubmit="submitAddCategory(event)" style="display:flex; gap:10px; margin-bottom: 20px;">
+                            <input type="text" id="new-category-name" placeholder="Nama Kategori Baru" required style="flex:1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <button type="submit" class="btn-submit" style="margin:0; padding: 10px 20px; white-space: nowrap;">Tambah</button>
+                        </form>
+                        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nama Kategori</th>
+                                        <th style="width: 120px; text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="category-list-body">
+                                    <!-- Populated dynamically -->
                                 </tbody>
                             </table>
                         </div>
