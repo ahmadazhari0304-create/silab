@@ -3,6 +3,36 @@
     // MAIN APPLICATION JAVASCRIPT
     // =============================================
 
+    // --- Global Loading Interceptor ---
+    let fetchActiveCount = 0;
+    const originalFetch = window.fetch;
+    
+    function showGlobalLoading(show) {
+        let loader = document.getElementById('global-loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'global-loader';
+            loader.innerHTML = '<div class="spinner"></div><div class="loader-text">Memproses...</div>';
+            document.body.appendChild(loader);
+        }
+        loader.style.display = show ? 'flex' : 'none';
+    }
+
+    window.fetch = async function(...args) {
+        fetchActiveCount++;
+        showGlobalLoading(true);
+        try {
+            const response = await originalFetch.apply(this, args);
+            return response;
+        } finally {
+            fetchActiveCount--;
+            if (fetchActiveCount <= 0) {
+                fetchActiveCount = 0;
+                showGlobalLoading(false);
+            }
+        }
+    };
+
     // --- Globals ---
     // Custom Confirm Logic
     let confirmCallback = null;
