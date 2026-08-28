@@ -1094,6 +1094,11 @@
             const countMaintenance = document.getElementById('count-maintenance');
             if (countMaintenance) countMaintenance.innerText = summary.maintenance || 0;
 
+            const countUtilPending = document.getElementById('count-util-pending');
+            if (countUtilPending) countUtilPending.innerText = summary.pending || 0;
+            const countUtilMaintenance = document.getElementById('count-util-maintenance');
+            if (countUtilMaintenance) countUtilMaintenance.innerText = summary.maintenance || 0;
+
             // Summary card
             const summaryCount = document.getElementById('total-bookings-count');
             if (summaryCount) summaryCount.innerText = todayBookings.length;
