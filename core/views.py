@@ -341,12 +341,12 @@ def handle_bhp(request):
 @login_required
 @require_http_methods(["GET"])
 def export_bhp_excel(request):
-    prodi = request.GET.get('prodi', 'D3 Keperawatan')
-    bhps = Bhp.objects.filter(prodi=prodi).order_by('-tanggal')
+    prodi_param = request.GET.get('prodi', 'D3')
+    bhps = Bhp.objects.filter(prodi__startswith=prodi_param).order_by('-tanggal')
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = f"BHP {prodi}"
+    ws.title = f"BHP {prodi_param}"
 
     # Headers
     headers = ['Nama Barang', 'Praktikum', 'Jumlah', 'Tanggal', 'Penginput']
@@ -362,7 +362,7 @@ def export_bhp_excel(request):
         ])
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="BHP_{prodi}_Export.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="BHP_{prodi_param}_Export.xlsx"'
     wb.save(response)
     return response
 
