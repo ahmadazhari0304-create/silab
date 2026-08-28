@@ -12,6 +12,7 @@ from .models import Users, Labs, Items, Bookings, Bhp, Sops, Maintenance
 from datetime import date
 import json
 from django.db.models import Q
+import openpyxl
 
 def check_conflict(nama_lab, tanggal, start_time, end_time, exclude_id=None):
     conflicts = Bookings.objects.filter(
@@ -336,6 +337,34 @@ def handle_bhp(request):
                 'users': {'username': b.user.username} if b.user else None
             })
         return JsonResponse(res, safe=False)
+
+@login_required
+@require_http_methods(["GET"])
+def export_bhp_excel(request):
+    prodi = request.GET.get('prodi', 'D3 Keperawatan')
+    bhps = Bhp.objects.filter(prodi=prodi).order_by('-tanggal')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"BHP {prodi}"
+
+    # Headers
+    headers = ['Nama Barang', 'Praktikum', 'Jumlah', 'Tanggal', 'Penginput']
+    ws.append(headers)
+
+    for bhp in bhps:
+        ws.append([
+            bhp.nama_barang,
+            bhp.praktikum,
+            bhp.jumlah,
+            bhp.tanggal.strftime('%Y-%m-%d') if bhp.tanggal else '',
+            bhp.user.username if bhp.user else ''
+        ])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="BHP_{prodi}_Export.xlsx"'
+    wb.save(response)
+    return response
 
 @login_required
 @csrf_exempt

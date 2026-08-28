@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/bookings/<int:id>', views.handle_booking_detail, name='handle_booking_detail'),
     path('api/bookings/<int:id>/status', views.update_booking_status, name='update_booking_status'),
     path('api/bhp', views.handle_bhp, name='handle_bhp'),
+    path('api/bhp/export', views.export_bhp_excel, name='export_bhp_excel'),
     path('api/bhp/<int:bhp_id>', views.delete_bhp, name='delete_bhp'),
     path('api/sops', views.handle_sops, name='handle_sops'),
     path('api/sops/<int:sop_id>', views.delete_sop, name='delete_sop'),
