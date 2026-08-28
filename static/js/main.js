@@ -6,6 +6,7 @@
     // --- Global Loading Interceptor ---
     let fetchActiveCount = 0;
     const originalFetch = window.fetch;
+    window.disableGlobalLoading = false;
     
     function showGlobalLoading(show) {
         let loader = document.getElementById('global-loader');
@@ -19,16 +20,21 @@
     }
 
     window.fetch = async function(...args) {
-        fetchActiveCount++;
-        showGlobalLoading(true);
+        const isBackground = window.disableGlobalLoading;
+        if (!isBackground) {
+            fetchActiveCount++;
+            showGlobalLoading(true);
+        }
         try {
             const response = await originalFetch.apply(this, args);
             return response;
         } finally {
-            fetchActiveCount--;
-            if (fetchActiveCount <= 0) {
-                fetchActiveCount = 0;
-                showGlobalLoading(false);
+            if (!isBackground) {
+                fetchActiveCount--;
+                if (fetchActiveCount <= 0) {
+                    fetchActiveCount = 0;
+                    showGlobalLoading(false);
+                }
             }
         }
     };
@@ -246,14 +252,16 @@
         const btn = document.querySelector(`.menu-btn[onclick*="'${tabId}'"]`);
         if (btn) btn.classList.add('active');
 
+        window.disableGlobalLoading = true;
+        
         if (tabId === 'peminjaman') { loadBookings(); renderCalendar(); }
         if (tabId === 'bhp') loadBHP();
         if (tabId === 'sop') loadSOP();
         if (tabId === 'home') updateDashboard();
         if (tabId === 'data-silab') { loadLabs(); loadItems(); }
-        if (tabId === 'kelola-pengguna') { loadUsers();
-            loadMaintenance(); }
+        if (tabId === 'kelola-pengguna') { loadUsers(); loadMaintenance(); }
         
+        window.disableGlobalLoading = false;
     }
 
     // --- Toast Notification ---
