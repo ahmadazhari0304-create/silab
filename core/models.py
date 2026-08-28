@@ -86,3 +86,10 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = 'users'
+
+class SopCategories(models.Model):
+    name = models.TextField(unique=True)
+
+    class Meta:
+        managed = False
+        db_table = 'sop_categories'

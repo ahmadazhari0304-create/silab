@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from .models import Users, Labs, Items, Bookings, Bhp, Sops, Maintenance
+from .models import Users, Labs, Items, Bookings, Bhp, Sops, Maintenance, SopCategories
 from datetime import date
 import json
 from django.db.models import Q
@@ -448,11 +448,46 @@ def delete_sop(request, sop_id):
                 if os.path.exists(file_path):
                     os.remove(file_path)
             except Exception:
-                pass
+                Sops.objects.filter(id=sop_id).delete()
         sop.delete()
         return JsonResponse({"status": "success", "message": "SOP berhasil dihapus!"})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+@login_required
+@csrf_exempt
+@require_http_methods(["GET", "POST", "DELETE"])
+def handle_sop_categories(request, category_id=None):
+    if request.method == 'GET':
+        categories = SopCategories.objects.all().order_by('id')
+        res = [{'id': c.id, 'name': c.name} for c in categories]
+        return JsonResponse(res, safe=False)
+        
+    if not request.session.get('is_admin'):
+        return HttpResponseForbidden("Hanya Admin yang dapat mengubah kategori")
+        
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        if not name:
+            return JsonResponse({"status": "error", "message": "Nama kategori tidak boleh kosong"}, status=400)
+        
+        try:
+            category, created = SopCategories.objects.get_or_create(name=name)
+            if not created:
+                return JsonResponse({"status": "error", "message": "Kategori sudah ada"}, status=400)
+            return JsonResponse({"status": "success", "message": "Kategori berhasil ditambahkan!"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+            
+    elif request.method == 'DELETE':
+        if not category_id:
+            return JsonResponse({"status": "error", "message": "ID kategori tidak ditemukan"}, status=400)
+        try:
+            SopCategories.objects.filter(id=category_id).delete()
+            return JsonResponse({"status": "success", "message": "Kategori berhasil dihapus!"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 @login_required
 def serve_sop_file(request, filename):

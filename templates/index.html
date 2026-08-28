@@ -141,6 +141,29 @@
         </div>
     </div>
 
+    <!-- Category Manage Modal -->
+    <div class="modal" id="category-manage-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Kelola Kategori SOP</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-category" onsubmit="submitAddCategory(event)" style="display:flex; gap:10px; margin-bottom: 20px;">
+                    <input type="text" id="new-category-name" placeholder="Nama Kategori Baru" required style="flex:1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <button type="submit" class="btn-submit" style="margin:0; padding: 10px 20px; white-space: nowrap;">Tambah</button>
+                </form>
+                <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tbody id="category-list-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar Menu -->
     
     <!-- Sidebar Menu -->
@@ -432,12 +455,20 @@
                     <p>Daftar panduan dan kuesioner praktikum laboratorium keperawatan</p>
                 </div>
                 {% if is_admin %}
-                <button id="btn-tambah-sop" class="btn-submit" onclick="openSopUploadModal()" style="gap: 8px; margin: 0;">
-                    <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
-                        <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Tambah SOP
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-submit" onclick="openCategoryModal()" style="gap: 8px; margin: 0; background: #6c757d; border-radius: 8px;">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Kelola Kategori
+                    </button>
+                    <button id="btn-tambah-sop" class="btn-submit" onclick="openSopUploadModal()" style="gap: 8px; margin: 0;">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24">
+                            <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Tambah SOP
+                    </button>
+                </div>
                 {% endif %}
             </div>
 
@@ -1577,7 +1608,7 @@ window.onerror = function(message, source, lineno, colno, error) {
         };
         window.currentUserIsAdmin = window.APP_CONFIG.isAdmin;
     </script>
-    <script src="{% static 'js/main.js' %}?v=3"></script>
+    <script src="{% static 'js/main.js' %}?v=4"></script>
 </body>
 
 

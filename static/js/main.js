@@ -957,6 +957,100 @@
         });
     }
 
+    // --- SOP Categories ---
+    function openCategoryModal() {
+        const modal = document.getElementById('category-manage-modal');
+        if (modal) modal.style.display = 'flex';
+        loadCategoriesList();
+    }
+    
+    function closeCategoryModal() {
+        const modal = document.getElementById('category-manage-modal');
+        if (modal) modal.style.display = 'none';
+    }
+    
+    async function loadCategoriesList() {
+        try {
+            const res = await fetch('/api/sop-categories');
+            const categories = await res.json();
+            const tbody = document.getElementById('category-list-body');
+            if (tbody) {
+                tbody.innerHTML = '';
+                if (categories.length === 0) {
+                    tbody.innerHTML = '<tr><td style="padding:10px;text-align:center;color:#8a857e;">Belum ada kategori.</td></tr>';
+                } else {
+                    categories.forEach(c => {
+                        tbody.innerHTML += `<tr>
+                            <td style="padding:10px;border-bottom:1px solid #eee;">${c.name}</td>
+                            <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">
+                                <button onclick="deleteCategory(${c.id})" style="color:#d9534f; background:transparent; border:none; cursor:pointer; font-weight:600; font-size:12px;">Hapus</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            }
+            populateCategoryDropdowns(categories);
+        } catch (e) {
+            console.error('Error loading SOP categories', e);
+        }
+    }
+    
+    function populateCategoryDropdowns(categories) {
+        const selects = [document.getElementById('sop-category'), document.getElementById('edit-sop-category')];
+        selects.forEach(select => {
+            if (select) {
+                const currentVal = select.value;
+                select.innerHTML = '<option value="" disabled selected>Pilih Kategori</option>';
+                categories.forEach(c => {
+                    select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                });
+                if (currentVal && categories.find(c => c.name === currentVal)) {
+                    select.value = currentVal;
+                }
+            }
+        });
+    }
+    
+    async function submitAddCategory(e) {
+        e.preventDefault();
+        const input = document.getElementById('new-category-name');
+        const name = input.value;
+        try {
+            const res = await fetch('/api/sop-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast(data.message);
+                input.value = '';
+                loadCategoriesList();
+            } else {
+                showToast(data.message, true);
+            }
+        } catch (e) {
+            showToast('Gagal tambah kategori', true);
+        }
+    }
+    
+    function deleteCategory(id) {
+        showCustomConfirm('Hapus kategori ini?', async () => {
+            try {
+                const res = await fetch(`/api/sop-categories/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message);
+                    loadCategoriesList();
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (e) {
+                showToast('Gagal hapus kategori', true);
+            }
+        });
+    }
+
     // =============================================
     // CALENDAR
     // =============================================
@@ -1567,8 +1661,9 @@
 
 function openSopUploadModal() {
     document.getElementById('sop-title').value = '';
-    document.getElementById('sop-category').value = 'Prosedur Medis';
+    document.getElementById('sop-category').value = '';
     document.getElementById('sop-file').value = '';
+    loadCategoriesList();
     document.getElementById('sop-upload-modal').style.display = 'flex';
 }
 
