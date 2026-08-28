@@ -412,7 +412,7 @@
         /* ===== STAT CARDS ===== */
         .stat-cards-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -464,7 +464,7 @@
         /* ===== MAIN GRID ===== */
         .dash-main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 20px;
             min-height: 0;
         }
@@ -643,6 +643,7 @@
         
         .calendar-grid-headers { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 12px; font-weight: 600; letter-spacing: 0.5px; }
         .monthly-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
         .monthly-calendar-grid .cal-day {
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
             font-size: 13px; font-weight: 500; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.7);
@@ -670,7 +671,7 @@
         .cal-legend .dot.dark { background: rgba(255,255,255,0.12); border: none; }
 
         /* Bottom Widgets Row */
-        .bottom-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .bottom-widgets { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-top: 20px; }
         
         /* Widget 3: Status */
         .widget-status { background: #fff; display: flex; flex-direction: column; }
@@ -705,6 +706,10 @@
         }
         
         .list-items { display: flex; flex-direction: column; gap: 10px; }
+        .list-items::-webkit-scrollbar { width: 4px; }
+        .list-items::-webkit-scrollbar-track { background: transparent; }
+        .list-items::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .list-items:hover::-webkit-scrollbar-thumb { background: #94a3b8; }
         .list-item {
             background: #fafbfc; border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center;
             border: 1px solid var(--border-color);
