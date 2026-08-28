@@ -569,7 +569,7 @@
             let actionBtn = '';
             
             if (window.currentUserIsAdmin) {
-                actionBtn = `<div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">`;
+                actionBtn = `<div style="display: flex; gap: 6px; justify-content: flex-start; flex-wrap: nowrap; min-width: max-content;">`;
                 
                 if (b.status === 'pending') {
                     actionBtn += `
@@ -1400,7 +1400,7 @@
                     </span>
                 </td>
                 <td style="text-align:center;">
-                    <div style="display: flex; gap: 6px; justify-content: center;">
+                    <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: nowrap; min-width: max-content;">
                         <button type="button" class="btn-table" onclick="deleteUser(${u.id}, '${u.username}')" style="color:#d9534f; background: rgba(217,83,79,0.1); border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;" title="Hapus">
                             Hapus
                         </button>
