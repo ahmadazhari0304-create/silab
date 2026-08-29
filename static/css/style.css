@@ -413,14 +413,14 @@
             margin-bottom: 28px;
         }
         .stat-card {
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 26px;
+            padding: 26px;
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
             gap: 16px;
-            min-height: 88px;
+            min-height: 110px;
             cursor: default;
             transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
         }
@@ -450,21 +450,21 @@
         }
         .stat-card-red:hover { box-shadow: 0 8px 24px rgba(239,68,68,0.15); }
         .stat-card-icon {
-            width: 48px; height: 48px; border-radius: 14px;
+            width: 42px; height: 42px; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .stat-card-emerald .stat-card-icon { background: linear-gradient(135deg, #1B8A7A, #4EB8A8); color: #fff; box-shadow: 0 4px 12px rgba(27,138,122,0.25); }
-        .stat-card-blue .stat-card-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,0.25); }
-        .stat-card-amber .stat-card-icon { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; box-shadow: 0 4px 12px rgba(245,158,11,0.25); }
-        .stat-card-red .stat-card-icon { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.25); }
+        .stat-card-emerald .stat-card-icon { background: #1B8A7A; color: #fff; box-shadow: 0 4px 12px rgba(27,138,122,0.25); }
+        .stat-card-blue .stat-card-icon { background: #3b82f6; color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,0.25); }
+        .stat-card-amber .stat-card-icon { background: #f59e0b; color: #fff; box-shadow: 0 4px 12px rgba(245,158,11,0.25); }
+        .stat-card-red .stat-card-icon { background: #ef4444; color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.25); }
         .stat-card-body { flex: 1; z-index: 2; }
-        .stat-number { font-size: 28px; font-weight: 800; line-height: 1; }
+        .stat-number { font-size: 42px; font-weight: 800; line-height: 1; }
         .stat-card-emerald .stat-number { color: #115e54; }
         .stat-card-blue .stat-number { color: #1e40af; }
         .stat-card-amber .stat-number { color: #92400e; }
         .stat-card-red .stat-number { color: #991b1b; }
-        .stat-label { font-size: 12px; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-label { font-size: 10px; font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-card-emerald .stat-label { color: #047857; }
         .stat-card-blue .stat-label { color: #2563eb; }
         .stat-card-amber .stat-label { color: #b45309; }
