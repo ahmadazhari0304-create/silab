@@ -177,6 +177,7 @@
 
     // --- Init ---
     document.addEventListener('DOMContentLoaded', function() {
+        window.disableGlobalLoading = true;
         const activeUser = window.APP_CONFIG.username;
         const isUserAdmin = window.currentUserIsAdmin;
         if (isUserAdmin) {
