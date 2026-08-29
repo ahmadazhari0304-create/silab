@@ -186,6 +186,7 @@
         switchTab('home');
 
         async function initializeData() {
+            window.disableGlobalLoading = true;
             try {
                 await Promise.all([
                     loadLabs(),
@@ -203,6 +204,7 @@
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 500);
                 }
+                window.disableGlobalLoading = false;
             }
         }
         
