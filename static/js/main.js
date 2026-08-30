@@ -548,9 +548,10 @@
                 showToast(data.message, data.status === 'error');
                 if(data.status === 'success') {
                     loadBookings();
-                    updateDashboardSummary();
+                    if (typeof updateDashboard === 'function') updateDashboard();
                 }
             } catch(e) {
+                console.error(e);
                 showToast('Gagal memproses peminjaman', true);
             }
         });
