@@ -1366,6 +1366,37 @@
                     });
                 }
             }
+
+            // Cancelled Bookings (Reschedule)
+            const cancelledBookingsList = document.getElementById('cancelled-booking-list');
+            const cancelledBadge = document.getElementById('cancelled-bookings-badge');
+            if (cancelledBookingsList) {
+                const batalBookings = bookings.filter(b => b.status === 'batal');
+                if (cancelledBadge) cancelledBadge.innerText = batalBookings.length;
+                
+                if (batalBookings.length === 0) {
+                    cancelledBookingsList.innerHTML = `<div class="dash-empty-state">
+                        <svg width="36" height="36" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p>Tidak ada jadwal batal.</p>
+                    </div>`;
+                } else {
+                    cancelledBookingsList.innerHTML = '';
+                    batalBookings.reverse().slice(0, 5).forEach(b => {
+                        cancelledBookingsList.innerHTML += `<div class="list-item">
+                            <div class="item-icon" style="background: rgba(148,163,184,0.1); color: #64748b;">
+                                <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="item-details">
+                                <div class="item-title" style="text-decoration: line-through; color: #94a3b8;">${b.nama_lab}</div>
+                                <div class="item-subtitle">${b.tanggal} | ${b.start_time} - ${b.end_time}</div>
+                            </div>
+                            <div class="item-action">
+                                <button onclick="switchTab('peminjaman')" style="background:none; border:none; color:#1B8A7A; font-weight:600; cursor:pointer; font-size:12px;">Cek</button>
+                            </div>
+                        </div>`;
+                    });
+                }
+            }
         } catch (e) { console.error('Error updating dashboard:', e); }
     }
 

@@ -394,6 +394,23 @@
                         <span id="active-bookings-badge" style="display:none;"></span>
                     </div>
 
+                    <!-- Cancelled Bookings (Reschedule) -->
+                    <div class="dash-card" style="flex: 1;">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title">
+                                <span class="dash-card-dot" style="background-color: #94a3b8;"></span>
+                                Menunggu Reschedule
+                            </div>
+                            <span class="dash-badge-count" id="cancelled-bookings-badge" style="background-color: #f1f5f9; color: #64748b;">0</span>
+                        </div>
+                        <div class="list-items" id="cancelled-booking-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto;">
+                            <div class="dash-empty-state">
+                                <svg width="36" height="36" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <p>Tidak ada jadwal batal.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- BHP Log -->
                     <div class="dash-card" style="flex: 1;">
                         <div class="dash-card-header">
