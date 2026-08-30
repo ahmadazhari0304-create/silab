@@ -578,12 +578,18 @@
         }
         
         // Update summary badges
+        updateBookingSummaryBadges(currentBookings);
+
+        filterBookingTable();
+    }
+
+    function updateBookingSummaryBadges(bookingsToCount) {
         const badgesContainer = document.getElementById('booking-summary-badges');
         if (badgesContainer) {
-            const totalPending = bookings.filter(b => b.status === 'pending').length;
-            const totalApproved = bookings.filter(b => b.status === 'approved').length;
-            const totalRejected = bookings.filter(b => b.status === 'rejected').length;
-            const totalBatal = bookings.filter(b => b.status === 'batal').length;
+            const totalPending = bookingsToCount.filter(b => b.status === 'pending').length;
+            const totalApproved = bookingsToCount.filter(b => b.status === 'approved').length;
+            const totalRejected = bookingsToCount.filter(b => b.status === 'rejected').length;
+            const totalBatal = bookingsToCount.filter(b => b.status === 'batal').length;
             badgesContainer.innerHTML = `
                 <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; font-size:12px; font-weight:600; color:#16a34a;">
                     <span style="width:8px;height:8px;border-radius:50%;background:#16a34a;"></span> Disetujui: ${totalApproved}
@@ -598,12 +604,10 @@
                     <span style="width:8px;height:8px;border-radius:50%;background:#64748b;"></span> Dibatalkan: ${totalBatal}
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:600; color:#64748b;">
-                    Total: ${bookings.length}
+                    Total: ${bookingsToCount.length}
                 </div>
             `;
         }
-
-        filterBookingTable();
     }
 
     function renderBookingTable(bookings) {
@@ -727,12 +731,16 @@
         const dateFilter = document.getElementById('filter-booking-date')?.value || '';
         const searchText = (document.getElementById('search-booking')?.value || '').toLowerCase();
         
-        const filtered = currentBookings.filter(b => {
+        const dateFilteredBookings = currentBookings.filter(b => !dateFilter || b.tanggal === dateFilter);
+        
+        // Update badges based on date filter (but ignore status/search filter)
+        updateBookingSummaryBadges(dateFilteredBookings);
+        
+        const filtered = dateFilteredBookings.filter(b => {
             const matchStatus = statusFilter === 'all' || b.status === statusFilter;
-            const matchDate = !dateFilter || b.tanggal === dateFilter;
             const searchStr = `${b.nama_lab} ${b.kelas || ''} ${b.prodi || ''} ${b.tujuan || ''} ${b.peminjam || ''}`.toLowerCase();
             const matchSearch = !searchText || searchStr.includes(searchText);
-            return matchStatus && matchDate && matchSearch;
+            return matchStatus && matchSearch;
         });
         
         renderBookingTable(filtered);
