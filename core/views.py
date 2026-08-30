@@ -630,7 +630,7 @@ def handle_booking_detail(request, id):
 def update_booking_status(request, id):
     data = json.loads(request.body)
     status = data.get('status')
-    if status not in ['approved', 'rejected']:
+    if status not in ['approved', 'rejected', 'batal']:
         return JsonResponse({"status": "error", "message": "Status tidak valid"}, status=400)
     
     try:

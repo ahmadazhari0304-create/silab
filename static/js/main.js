@@ -618,6 +618,13 @@
                             Tolak
                         </button>
                     `;
+                } else if (b.status === 'approved') {
+                    actionBtn += `
+                        <button onclick="updateBookingStatus(${b.id}, 'batal')" style="display:inline-flex;align-items:center;gap:4px;color:#64748b; background:#f1f5f9; border:1px solid #e2e8f0; padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600; font-size:11px; transition:all 0.2s;" onmouseenter="this.style.background='#e2e8f0'" onmouseleave="this.style.background='#f1f5f9'" title="Tandai tidak jadi/batal">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Batal
+                        </button>
+                    `;
                 }
                 
                 actionBtn += `
@@ -650,6 +657,9 @@
             } else if (b.status === 'approved') {
                 statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4; color:#16a34a; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #bbf7d0;">
                     <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>Disetujui</span>`;
+            } else if (b.status === 'batal') {
+                statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#f8fafc; color:#64748b; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #e2e8f0;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#64748b;"></span>Dibatalkan</span>`;
             } else {
                 statusBadge = `<span style="display:inline-flex;align-items:center;gap:4px;background:#fef2f2; color:#dc2626; padding:5px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1px solid #fecaca;">
                     <span style="width:6px;height:6px;border-radius:50%;background:#dc2626;"></span>Ditolak</span>`;
@@ -1157,14 +1167,19 @@
                 let statusColor, statusText, textColor;
                 if(b.status === 'pending') { statusColor = '#FEFCBF'; textColor = '#B7791F'; statusText = 'Menunggu'; }
                 else if(b.status === 'approved') { statusColor = '#C6F6D5'; textColor = '#22543D'; statusText = 'Disetujui'; }
+                else if(b.status === 'batal') { statusColor = '#f1f5f9'; textColor = '#64748b'; statusText = 'Dibatalkan'; }
                 else { statusColor = '#FED7D7'; textColor = '#822727'; statusText = 'Ditolak'; }
                 
                 let statusBadge = `<span style="background:${statusColor}; color:${textColor}; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600;">${statusText}</span>`;
 
                 let actionButtons = '';
-                if(window.currentUserIsAdmin && b.status === 'pending') {
-                    actionButtons += `<button onclick="updateBookingStatus(${b.id}, 'approved');document.getElementById('modal-day-detail').style.display='none';" class="btn-table" style="color:#22543D; background: #C6F6D5; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;">Setujui</button>`;
-                    actionButtons += `<button onclick="updateBookingStatus(${b.id}, 'rejected');document.getElementById('modal-day-detail').style.display='none';" class="btn-table" style="color:#822727; background: #FED7D7; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;">Tolak</button>`;
+                if(window.currentUserIsAdmin) {
+                    if (b.status === 'pending') {
+                        actionButtons += `<button onclick="updateBookingStatus(${b.id}, 'approved');document.getElementById('modal-day-detail').style.display='none';" class="btn-table" style="color:#22543D; background: #C6F6D5; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;">Setujui</button>`;
+                        actionButtons += `<button onclick="updateBookingStatus(${b.id}, 'rejected');document.getElementById('modal-day-detail').style.display='none';" class="btn-table" style="color:#822727; background: #FED7D7; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;">Tolak</button>`;
+                    } else if (b.status === 'approved') {
+                        actionButtons += `<button onclick="updateBookingStatus(${b.id}, 'batal');document.getElementById('modal-day-detail').style.display='none';" class="btn-table" style="color:#64748b; background: #f1f5f9; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s;">Batal</button>`;
+                    }
                 }
                 
                 const isOwner = (b.peminjam && b.peminjam === window.APP_CONFIG.username) || (!b.peminjam);
@@ -1247,13 +1262,19 @@
                 } else {
                     scheduleList.innerHTML = '';
                     todayBookings.forEach(b => {
+                        let badgeHtml = '';
+                        if (b.status === 'approved') badgeHtml = '<span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:rgba(27,138,122,0.12); color:#1B8A7A;">Aktif</span>';
+                        else if (b.status === 'batal') badgeHtml = '<span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#f1f5f9; color:#64748b; text-decoration:line-through;">Batal</span>';
+                        else if (b.status === 'pending') badgeHtml = '<span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef9c3; color:#a16207;">Menunggu</span>';
+                        else if (b.status === 'rejected') badgeHtml = '<span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:#dc2626;">Ditolak</span>';
+                        
                         scheduleList.innerHTML += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:#f8fafc; border-radius:12px; border-left: 4px solid #1B8A7A;">
+                        <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:#f8fafc; border-radius:12px; border-left: 4px solid ${b.status==='batal' ? '#94a3b8' : (b.status==='pending' ? '#eab308' : b.status==='rejected' ? '#ef4444' : '#1B8A7A')}; opacity: ${b.status==='batal'||b.status==='rejected' ? '0.7' : '1'};">
                             <div style="flex:1;">
-                                <div style="font-size:14px; font-weight:700; color:#1e293b;">${b.nama_lab}</div>
+                                <div style="font-size:14px; font-weight:700; color:#1e293b; text-decoration: ${b.status==='batal' ? 'line-through' : 'none'};">${b.nama_lab}</div>
                                 <div style="font-size:12px; color:#64748b; margin-top:2px;">${b.start_time} - ${b.end_time} &middot; ${b.kelas || ''}</div>
                             </div>
-                            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:rgba(27,138,122,0.12); color:#1B8A7A;">Aktif</span>
+                            ${badgeHtml}
                         </div>`;
                     });
                 }
@@ -1309,9 +1330,9 @@
                     recentBookingsList.innerHTML = '';
                     const recent = [...bookings].reverse().slice(0, 5);
                     recent.forEach(b => {
-                        let statusColor = b.status === 'approved' ? '#C6F6D5' : b.status === 'rejected' ? '#FED7D7' : '#FEFCBF';
-                        let textColor = b.status === 'approved' ? '#22543D' : b.status === 'rejected' ? '#822727' : '#744210';
-                        let statusText = b.status === 'approved' ? 'Disetujui' : b.status === 'rejected' ? 'Ditolak' : 'Menunggu';
+                        let statusColor = b.status === 'approved' ? '#C6F6D5' : b.status === 'rejected' ? '#FED7D7' : b.status === 'batal' ? '#f1f5f9' : '#FEFCBF';
+                        let textColor = b.status === 'approved' ? '#22543D' : b.status === 'rejected' ? '#822727' : b.status === 'batal' ? '#64748b' : '#744210';
+                        let statusText = b.status === 'approved' ? 'Disetujui' : b.status === 'rejected' ? 'Ditolak' : b.status === 'batal' ? 'Dibatalkan' : 'Menunggu';
                         
                         recentBookingsList.innerHTML += `<div class="list-item">
                             <div class="item-icon" style="background: rgba(27,138,122,0.1); color: #1B8A7A;">
