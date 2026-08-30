@@ -253,6 +253,16 @@
     }
 
     // --- Tab Navigation ---
+    window.cekJadwalBatal = function(tanggal) {
+        switchTab('peminjaman');
+        if (typeof switchPinjamTab === 'function') switchPinjamTab('riwayat');
+        const dateInput = document.getElementById('filter-booking-date');
+        const statusSelect = document.getElementById('filter-booking-status');
+        if (dateInput) dateInput.value = tanggal;
+        if (statusSelect) statusSelect.value = 'batal';
+        if (typeof filterBookingTable === 'function') filterBookingTable();
+    };
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
@@ -1391,7 +1401,7 @@
                                 <div class="item-subtitle">${b.tanggal} | ${b.start_time} - ${b.end_time}</div>
                             </div>
                             <div class="item-action">
-                                <button onclick="switchTab('peminjaman')" style="background:none; border:none; color:#1B8A7A; font-weight:600; cursor:pointer; font-size:12px;">Cek</button>
+                                <button onclick="cekJadwalBatal('${b.tanggal}')" style="background:none; border:none; color:#1B8A7A; font-weight:600; cursor:pointer; font-size:12px;">Cek</button>
                             </div>
                         </div>`;
                     });
