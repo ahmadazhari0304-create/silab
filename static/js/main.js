@@ -218,6 +218,14 @@
         }
         
         initializeData();
+        
+        // Set dynamic date in header
+        const currentDateElement = document.getElementById('current-date');
+        if (currentDateElement) {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.innerText = today.toLocaleDateString('id-ID', options);
+        }
 
         // Init timepicker if available
         if (typeof mdtimepicker !== 'undefined') {
