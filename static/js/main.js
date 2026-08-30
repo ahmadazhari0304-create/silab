@@ -573,6 +573,7 @@
             const totalPending = bookings.filter(b => b.status === 'pending').length;
             const totalApproved = bookings.filter(b => b.status === 'approved').length;
             const totalRejected = bookings.filter(b => b.status === 'rejected').length;
+            const totalBatal = bookings.filter(b => b.status === 'batal').length;
             badgesContainer.innerHTML = `
                 <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; font-size:12px; font-weight:600; color:#16a34a;">
                     <span style="width:8px;height:8px;border-radius:50%;background:#16a34a;"></span> Disetujui: ${totalApproved}
@@ -582,6 +583,9 @@
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:20px; font-size:12px; font-weight:600; color:#dc2626;">
                     <span style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></span> Ditolak: ${totalRejected}
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:600; color:#64748b;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#64748b;"></span> Dibatalkan: ${totalBatal}
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:20px; font-size:12px; font-weight:600; color:#64748b;">
                     Total: ${bookings.length}
