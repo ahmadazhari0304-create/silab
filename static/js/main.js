@@ -701,13 +701,15 @@
 
     function filterBookingTable() {
         const statusFilter = document.getElementById('filter-booking-status')?.value || 'all';
+        const dateFilter = document.getElementById('filter-booking-date')?.value || '';
         const searchText = (document.getElementById('search-booking')?.value || '').toLowerCase();
         
         const filtered = currentBookings.filter(b => {
             const matchStatus = statusFilter === 'all' || b.status === statusFilter;
+            const matchDate = !dateFilter || b.tanggal === dateFilter;
             const searchStr = `${b.nama_lab} ${b.kelas || ''} ${b.prodi || ''} ${b.tujuan || ''} ${b.peminjam || ''}`.toLowerCase();
             const matchSearch = !searchText || searchStr.includes(searchText);
-            return matchStatus && matchSearch;
+            return matchStatus && matchDate && matchSearch;
         });
         
         renderBookingTable(filtered);

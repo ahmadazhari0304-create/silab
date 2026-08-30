@@ -598,6 +598,7 @@
                         <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0;">Kelola semua peminjaman laboratorium</p>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="date" id="filter-booking-date" onchange="filterBookingTable()" style="padding: 7px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 500; background: #fff; color: var(--text-main); cursor: pointer;" title="Filter berdasarkan tanggal">
                         <select id="filter-booking-status" onchange="filterBookingTable()" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 500; background: #fff; color: var(--text-main); cursor: pointer;">
                             <option value="all">Semua Status</option>
                             <option value="pending">Menunggu</option>
