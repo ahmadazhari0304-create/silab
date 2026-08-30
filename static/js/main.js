@@ -189,8 +189,9 @@
         async function initializeData() {
             window.disableGlobalLoading = true;
             try {
-                // Set default date filter to today
-                const todayStr = new Date().toISOString().split('T')[0];
+                // Set default date filter to today (local time)
+                const now = new Date();
+                const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
                 const dateFilterEl = document.getElementById('filter-booking-date');
                 if (dateFilterEl) {
                     dateFilterEl.value = todayStr;
@@ -1237,7 +1238,8 @@
             const labs = await labsRes.json();
             const summary = await summaryRes.json();
 
-            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
             const todayBookings = bookings.filter(b => b.tanggal === today);
 
             // Summary card metrics
