@@ -1099,9 +1099,10 @@
         const labFilter = document.getElementById('calendar-lab-filter');
         const filterLab = labFilter ? labFilter.value : '';
 
-        let filteredBookings = currentBookings;
+        // Hanya tampilkan yang disetujui atau pending di kalender
+        let filteredBookings = currentBookings.filter(b => b.status === 'approved' || b.status === 'pending');
         if (filterLab) {
-            filteredBookings = currentBookings.filter(b => b.nama_lab === filterLab);
+            filteredBookings = filteredBookings.filter(b => b.nama_lab === filterLab);
         }
 
         grid.innerHTML = '';
