@@ -189,6 +189,13 @@
         async function initializeData() {
             window.disableGlobalLoading = true;
             try {
+                // Set default date filter to today
+                const todayStr = new Date().toISOString().split('T')[0];
+                const dateFilterEl = document.getElementById('filter-booking-date');
+                if (dateFilterEl) {
+                    dateFilterEl.value = todayStr;
+                }
+                
                 await Promise.all([
                     loadLabs(),
                     loadItems(),
@@ -580,7 +587,7 @@
             `;
         }
 
-        renderBookingTable(bookings);
+        filterBookingTable();
     }
 
     function renderBookingTable(bookings) {
