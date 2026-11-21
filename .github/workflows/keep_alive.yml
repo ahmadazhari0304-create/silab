@@ -11,16 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Web App Health Endpoint
+        continue-on-error: true
         run: |
           echo "Pinging Vercel Deployment Health Endpoint..."
-          curl -fsSL https://silab-umkt.vercel.app/api/health || curl -fsSL https://silab-xi.vercel.app/api/health || echo "Web ping done"
+          curl -sS https://silab-umkt.vercel.app/api/health || curl -sS https://silab-xi.vercel.app/api/health || echo "Web ping attempt finished"
 
       - name: Direct Ping to Supabase REST API
+        continue-on-error: true
         run: |
           echo "Pinging Supabase REST API directly..."
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "https://hxsmcgsmsprguzbuiphy.supabase.co/rest/v1/" \
             -H "apikey: sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn" \
-            -H "Authorization: Bearer sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn")
+            -H "Authorization: Bearer sb_publishable_empmzEuTidVkiBUmRErwnQ_5KcI-pwn" || echo "UNREACHABLE")
           echo "Supabase Response Status Code: $STATUS"
-
+          if [ "$STATUS" = "UNREACHABLE" ] || [ "$STATUS" = "000" ]; then
+            echo "::warning::Supabase host is unreachable. Please verify if the project is paused in Supabase Dashboard."
+          fi
